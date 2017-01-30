@@ -50,11 +50,11 @@ class: left, top
 
 --
 
-Sufficently accurate predictions to be helpful to HPD and/or community organizations
+Sufficiently accurate predictions to be helpful to HPD and/or community organizations
 
 --
 
-Include estimated liklihood of violations to allow tageting resources
+Include estimated likelihood of violations to allow targeting resources
 
 --
 
@@ -71,7 +71,7 @@ Effective measures taken to minimize potential biases in models
 
 --
 
-Premptive HPD inpections could prevent violations or reduce their severity or duration
+Preemptive HPD inspections could prevent violations or reduce their severity or duration
 
 --
 
@@ -97,7 +97,7 @@ Building level data on all multi-family rental buildings, including as many of t
 
 --
 
-  1. Quickly compile a minimal version of the necesary data set
+  1. Quickly compile a minimal version of the necessary data set
   2. Test different models with simple set of inputs
   3. Add more data from other sources after some viable models built
 
