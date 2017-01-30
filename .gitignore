@@ -23,6 +23,10 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+# RStudio project
 .Rproj.user
+# Packrat library sources
 packrat/lib*/
 packrat/src/
+# Mac files
+.DS_Store
