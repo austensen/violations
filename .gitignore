@@ -30,3 +30,7 @@ packrat/lib*/
 packrat/src/
 # Mac files
 .DS_Store
+# data folders
+data/
+data-raw/
+
