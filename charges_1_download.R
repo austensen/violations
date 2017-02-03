@@ -27,7 +27,10 @@ data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/charges-open-data.pag
   html_nodes(".about-description ul li a") %>% 
   html_attr("href") %>% 
   xml2::url_absolute("http://www1.nyc.gov/") %>% 
-  str_replace_all("Complaints|Buildings", "Charges") # Correct incorrect links in some months 
+  str_replace("Charges20141001", "Charges20141101") %>% 
+  str_replace("Complaints20130801", "Charges20130801") 
+
+# there are some incorrect links in some months 
 
 download_charges <- function(url) {
   filename <- str_extract(url, "Charges*\\d{8}")
