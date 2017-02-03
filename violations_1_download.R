@@ -34,7 +34,7 @@ data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/violation-open-data.p
   html_attr("href") %>% 
   xml2::url_absolute("http://www1.nyc.gov/")
 
-# There are some inconsistencies (errors?) in the naming of zip files, "violations" is not plural in one month
+# There is one file where the name uses "Violation" not "Violations", the one linked to is valid
 
 download_violations <- function(url) {
   filename <- str_extract(url, "Violations*\\d{8}")
