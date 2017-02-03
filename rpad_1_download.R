@@ -3,7 +3,12 @@ library(tidyverse)
 library(here) 
 
 dir.create(here("data-raw"), showWarnings = FALSE)
+dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
 dir.create(here("data-raw", "rpad"), showWarnings = FALSE)
+
+# Documentation
+download.file("http://www1.nyc.gov/assets/finance/downloads/tar/tarfieldcodes.pdf",
+              here("data-raw", "documentation", "rpad_data_dictionary.pdf"))
 
 # 2017 --------------------------------------------------------------------
 
@@ -28,3 +33,9 @@ rpad_234_16 <- mdb.get(here("data-raw", "rpad", "tc234.mdb"))
 
 write_csv(rpad_234_16[[1]], here("data-raw", "rpad", "rpad_234_16_nametable.csv"))
 write_csv(rpad_234_16[[2]], here("data-raw", "rpad", "rpad_234_16.csv"))
+
+
+# Delete mdb and zip files
+here("data-raw", "rpad") %>%
+  dir(pattern = "\\.(mdb|zip)$", full.names = TRUE) %>% 
+  file.remove()
