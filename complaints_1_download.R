@@ -4,6 +4,7 @@ library(stringr)
 library(rvest)
 library(here) 
 
+source(here("functions", "download_files.R"))
 
 dir.create(here("data-raw"), showWarnings = FALSE)
 dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
@@ -30,17 +31,7 @@ data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/Complaints-open-data.
   html_attr("href") %>% 
   xml2::url_absolute("http://www1.nyc.gov/")
 
-download_complaints <- function(url) {
-  filename <- str_extract(url, "Complaints*\\d{8}")
-  
-  dir.create(here("data-raw", "complaints"), showWarnings = FALSE)
-  
-  download.file(url, here("data-raw", "complaints", str_c(filename, ".zip")), mode = "wb", quiet = TRUE)
-  
-  unzip(here("data-raw", "complaints", str_c(filename, ".zip")), exdir = here("data-raw", "complaints"))
-}
-
-walk(data_urls, download_complaints)
+walk(data_urls, download_files, filename = "Complaints", outdir = here("data-raw", "complaints"))
 
 # Delete xml and zip files
 here("data-raw", "complaints") %>%

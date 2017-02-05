@@ -4,6 +4,8 @@ library(stringr)
 library(rvest)
 library(here) 
 
+source(here("functions", "download_files.R"))
+
 dir.create(here("data-raw"), showWarnings = FALSE)
 dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
 dir.create(here("data-raw", "charges"), showWarnings = FALSE)
@@ -23,26 +25,16 @@ here("data-raw", "documentation") %>%
 
 # Data Files --------------------------------------------------------------
 
+# Unlike other files, for Charges the most recent months includes _all_ past charges
 data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/charges-open-data.page") %>% 
   html_nodes(".about-description ul li a") %>% 
   html_attr("href") %>% 
   xml2::url_absolute("http://www1.nyc.gov/") %>% 
-  str_replace("Charges20141001", "Charges20141101") %>% 
-  str_replace("Complaints20130801", "Charges20130801") 
+  str_replace("Complaints|Buildings", "Charges") %>% # there are some incorrectly named links in some months 
+  str_sort(decreasing = TRUE) %>% 
+  extract(1)
 
-# there are some incorrect links in some months 
-
-download_charges <- function(url) {
-  filename <- str_extract(url, "Charges*\\d{8}")
-  
-  dir.create(here("data-raw", "charges"), showWarnings = FALSE)
-  
-  download.file(url, here("data-raw", "charges", str_c(filename, ".zip")), mode = "wb", quiet = TRUE)
-  
-  unzip(here("data-raw", "charges", str_c(filename, ".zip")), exdir = here("data-raw", "charges"))
-}
-
-walk(data_urls, download_charges)
+download_files(data_urls, filename = "Charges", outdir = here("data-raw", "charges"))
 
 # Delete xml and zip files
 here("data-raw", "charges") %>%

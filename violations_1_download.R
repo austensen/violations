@@ -4,6 +4,8 @@ library(stringr)
 library(rvest)
 library(here) 
 
+source(here("functions", "download_files.R"))
+
 dir.create(here("data-raw"), showWarnings = FALSE)
 dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
 dir.create(here("data-raw", "violations"), showWarnings = FALSE)
@@ -32,21 +34,12 @@ file.remove(here("data-raw", "documentation", "ViolationsOpenDataDoc"))
 data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/violation-open-data.page") %>% 
   html_nodes(".about-description ul li a") %>% 
   html_attr("href") %>% 
-  xml2::url_absolute("http://www1.nyc.gov/")
+  xml2::url_absolute("http://www1.nyc.gov/") %>% 
+  str_sort(decreasing = TRUE)
 
 # There is one file where the name uses "Violation" not "Violations", the one linked to is valid
 
-download_violations <- function(url) {
-  filename <- str_extract(url, "Violations*\\d{8}")
-  
-  dir.create(here("data-raw", "violations"), showWarnings = FALSE)
-  
-  download.file(url, here("data-raw", "violations", str_c(filename, ".zip")), mode = "wb", quiet = TRUE)
-  
-  unzip(here("data-raw", "violations", str_c(filename, ".zip")), exdir = here("data-raw", "violations"))
-}
-
-walk(data_urls, download_violations)
+walk(data_urls, download_files, filename = "Violation", outdir = here("data-raw", "violations"))
 
 # Delete xml and zip files
 here("data-raw", "violations") %>%
