@@ -50,6 +50,16 @@ Source: CRAN
 Version: 0.1
 Hash: 0afb92b59b02593c70ff8046700ba9d3
 
+Package: austensen
+Source: github
+Version: 0.0.0.9000
+Hash: 4b2e302485cb840b0c4024b6886fa18f
+Requires: dplyr, ggplot2, magrittr, sandwich, stargazer, stringr
+GithubRepo: austensen
+GithubUsername: austensen
+GithubRef: master
+GithubSha1: 74817085c281d08650936830ef80b9e65f72b681
+
 Package: backports
 Source: CRAN
 Version: 1.0.5
@@ -374,6 +384,12 @@ Version: 0.3.2
 Hash: c69f7526520bad66fd2111ebe8b1364b
 Requires: httr, magrittr, selectr, xml2
 
+Package: sandwich
+Source: CRAN
+Version: 2.3-4
+Hash: eb356b4a90fa5887a45917b42587bf6c
+Requires: zoo
+
 Package: scales
 Source: CRAN
 Version: 0.4.1
@@ -403,6 +419,11 @@ Package: sourcetools
 Source: CRAN
 Version: 0.1.5
 Hash: 04ddeb1c288302222562326a471e2945
+
+Package: stargazer
+Source: CRAN
+Version: 5.2
+Hash: fc843e7cc51afa4f540fc3c3355fe2a7
 
 Package: stringi
 Source: CRAN
@@ -472,3 +493,8 @@ Package: yaml
 Source: CRAN
 Version: 2.1.14
 Hash: c81230c3a7d9ba20607ad6b4331173d1
+
+Package: zoo
+Source: CRAN
+Version: 1.7-14
+Hash: a4c3a385cd122b5d6af30732bf267060
