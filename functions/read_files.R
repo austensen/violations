@@ -15,5 +15,6 @@ read_files <- function(indir, filename, col_spec, months = NULL) {
     purrr::map(~ readr::read_lines(.x) %>% 
           stringr::str_replace_all("\"", "") %>% 
           stringr::str_c(collapse = "\n")) %>% 
-    purrr::map_df(readr::read_delim, delim = "|", trim_ws = T, col_types = col_spec)
+    purrr::map_df(readr::read_delim, delim = "|", trim_ws = T, col_types = col_spec) %>% 
+    janitor::clean_names()
 }
