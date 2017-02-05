@@ -216,6 +216,12 @@ Version: 1.2.1
 Hash: 7de1f8f760441881804af7c1ff324340
 Requires: R6, curl, jsonlite, mime, openssl
 
+Package: janitor
+Source: CRAN
+Version: 0.2.1
+Hash: a63a924b39a17bfa96e0d4639c666591
+Requires: dplyr, tidyr
+
 Package: jsonlite
 Source: CRAN
 Version: 1.2
