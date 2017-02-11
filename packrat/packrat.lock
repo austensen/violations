@@ -137,6 +137,12 @@ Version: 0.10
 Hash: c3601a10c987d439e0c63ec635234a76
 Requires: stringr
 
+Package: feather
+Source: CRAN
+Version: 0.3.1
+Hash: 817a639cbc7c1ccc85ab79a4eaa7d209
+Requires: Rcpp, hms, tibble
+
 Package: forcats
 Source: CRAN
 Version: 0.2.0
@@ -408,6 +414,12 @@ Version: 0.5
 Hash: ae7c38f1b604e0aa4c288ae65b4b3b30
 Requires: httpuv, jsonlite, mime
 
+Package: sf
+Source: CRAN
+Version: 0.3-4
+Hash: 148d7ee9ea8235ddc67ffa75098c636a
+Requires: DBI, Rcpp, units
+
 Package: shiny
 Source: CRAN
 Version: 1.0.0
@@ -455,6 +467,17 @@ Hash: 72d5fada870c90b835bbdfc281283c99
 Requires: broom, dplyr, forcats, ggplot2, haven, hms, httr, jsonlite,
     lubridate, magrittr, modelr, purrr, readr, readxl, rvest, stringr,
     tibble, tidyr, xml2
+
+Package: udunits2
+Source: CRAN
+Version: 0.13
+Hash: 587587ec23c49271e0657fed726e7846
+
+Package: units
+Source: CRAN
+Version: 0.4-2
+Hash: 51cbd36b597c3a8d54c88783a1bc1411
+Requires: udunits2
 
 Package: viridis
 Source: CRAN
