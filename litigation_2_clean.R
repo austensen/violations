@@ -1,9 +1,8 @@
 library(tidyverse) 
 library(magrittr)
 library(stringr)
-library(here) 
 
-source(here("functions", "read_files.R"))
+source("functions/read_files.R")
 
 litigation_cols <- cols(
   LitigationID = col_integer(),
@@ -22,4 +21,4 @@ litigation_cols <- cols(
 )
 
 # read in and stack all files
-litigations <- read_files(here("data-raw", "litigation"), "Litigation", litigation_cols, months = 13)
+litigations <- read_files("data-raw/litigation", "Litigation", litigation_cols, months = 13)

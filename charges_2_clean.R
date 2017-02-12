@@ -1,9 +1,8 @@
 library(tidyverse) 
 library(magrittr)
 library(stringr)
-library(here) 
 
-source(here("functions", "read_files.R"))
+source("functions/read_files.R")
 
 omo_cols <- cols(
   OMOID = col_integer(),
@@ -58,6 +57,7 @@ hwo_cols <- cols(
   ChargeAmount = col_double(),
   DateTransferDoF = col_date("%m/%d/%Y")
 )
+
 invoice_cols <- cols(
   InvoiceID = col_integer(),
   InvoiceNumber = col_character(),
@@ -95,7 +95,7 @@ fee_cols <- cols(
   DoFTransferDate = col_date("%m/%d/%Y")
 )
  
-omo_charges <- read_files(here("data-raw", "charges"), "OMOCharge", omo_cols, months = 1)
-hwo_charges <- read_files(here("data-raw", "charges"), "HWOCharge", hwo_cols, months = 1)
-invoice_charges <- read_files(here("data-raw", "charges"), "Invoice", invoice_cols, months = 1)
-fee_charges <- read_files(here("data-raw", "charges"), "FEECharge", fee_cols, months = 1)
+omo_charges <- read_files("data-raw/charges", "OMOCharge", omo_cols, months = 1)
+hwo_charges <- read_files("data-raw/charges", "HWOCharge", hwo_cols, months = 1)
+invoice_charges <- read_files("data-raw/charges", "Invoice", invoice_cols, months = 1)
+fee_charges <- read_files("data-raw/charges", "FEECharge", fee_cols, months = 1)

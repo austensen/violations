@@ -2,26 +2,23 @@ library(tidyverse)
 library(magrittr)
 library(stringr)
 library(rvest)
-library(here) 
 
-source(here("functions", "download_files.R"))
+source("functions/download_files.R"))
 
-dir.create(here("data-raw"), showWarnings = FALSE)
-dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
-dir.create(here("data-raw", "charges"), showWarnings = FALSE)
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-raw/documentation", showWarnings = FALSE)
+dir.create("data-raw/charges", showWarnings = FALSE)
 
 
 # Documentation Files -----------------------------------------------------
 
 download.file("http://www1.nyc.gov/assets/hpd/downloads/pdf/ChargesOpenDataDoc.zip", 
-              here("data-raw", "documentation", "ChargesOpenDataDoc.zip"), mode = "wb", quiet = TRUE)
+              "data-raw/documentation/ChargesOpenDataDoc.zip", mode = "wb", quiet = TRUE)
 
-unzip(here("data-raw", "documentation", "ChargesOpenDataDoc.zip"), exdir = here("data-raw", "documentation"))
+unzip("data-raw/documentation/ChargesOpenDataDoc.zip", exdir = "data-raw/documentation")
 
 # Delete xsd and zip files
-here("data-raw", "documentation") %>%
-  dir(pattern = "\\.(xsd|zip)$", full.names = TRUE) %>% 
-  file.remove()
+dir("data-raw/documentation", pattern = "\\.(xsd|zip)$", full.names = TRUE) %>% file.remove()
 
 # Data Files --------------------------------------------------------------
 
@@ -34,9 +31,7 @@ data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/charges-open-data.pag
   str_sort(decreasing = TRUE) %>% 
   extract(1)
 
-download_files(data_urls, filename = "Charges", outdir = here("data-raw", "charges"))
+download_files(data_urls, filename = "Charges", outdir = "data-raw/charges")
 
 # Delete xml and zip files
-here("data-raw", "charges") %>%
-  dir(pattern = "\\.(xml|zip)$", full.names = TRUE) %>% 
-  file.remove()
+dir("data-raw/charges", pattern = "\\.(xml|zip)$", full.names = TRUE) %>% file.remove()

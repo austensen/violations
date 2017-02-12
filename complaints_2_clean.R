@@ -1,9 +1,8 @@
 library(tidyverse) 
 library(magrittr)
 library(stringr)
-library(here) 
 
-source(here("functions", "read_files.R"))
+source("functions/read_files.R")
 
 complaint_cols <- cols(
   ComplaintID = col_integer(),
@@ -46,7 +45,7 @@ problem_cols <- cols(
 
 # read in and stack all files
 
-complaints <- read_files(here("data-raw", "complaints"), "Complaint", complaint_cols, months = 13)
-problems <- read_files(here("data-raw", "complaints"), "Problem", problem_cols, months = 13)
+complaints <- read_files("data-raw/complaints", "Complaint", complaint_cols, months = 13)
+problems <- read_files("data-raw/complaints", "Problem", problem_cols, months = 13)
 
 complaints_problems <- full_join(complaints, problems, by = c("ComplaintID", "StatusID", "Status", "StatusDate"))

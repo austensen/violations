@@ -4,30 +4,28 @@ library(stringr)
 library(rvest)
 library(here) 
 
-source(here("functions", "download_files.R"))
+source("functionsdownload_files.R")
 
-dir.create(here("data-raw"), showWarnings = FALSE)
-dir.create(here("data-raw", "documentation"), showWarnings = FALSE)
-dir.create(here("data-raw", "violations"), showWarnings = FALSE)
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-rawdocumentation", showWarnings = FALSE)
+dir.create("data-rawviolations", showWarnings = FALSE)
 
 
 # Documentation Files -----------------------------------------------------
 
 download.file("http://www1.nyc.gov/assets/hpd/downloads/misc/ViolationsOpenDataDoc.zip", 
-              here("data-raw", "documentation", "ViolationsOpenDataDoc.zip"), mode = "wb", quiet = TRUE)
+              "data-raw/documentation/ViolationsOpenDataDoc.zip", mode = "wb", quiet = TRUE)
 
-unzip(here("data-raw", "documentation", "ViolationsOpenDataDoc.zip"), exdir = here("data-raw", "documentation"))
+unzip("data-raw/documentation/ViolationsOpenDataDoc.zip", exdir = "data-raw/documentation")
 
-file.rename(here("data-raw", "documentation", "ViolationsOpenDataDoc", "HPD Violation Open Data.pdf"),
-            here("data-raw", "documentation", "HPD Violation Open Data.pdf"))
+file.rename("data-raw/documentation/ViolationsOpenDataDoc/HPD Violation Open Data.pdf",
+            "data-raw/documentation/HPD Violation Open Data.pdf")
 
 
 # Delete all fies in unwanted subdirectory, then the subdirectory itself
-here("data-raw", "documentation", "ViolationsOpenDataDoc") %>%
-  dir(full.names = TRUE) %>% 
-  file.remove()
+dir("data-raw/documentation/ViolationsOpenDataDoc", full.names = TRUE) %>% file.remove()
 
-file.remove(here("data-raw", "documentation", "ViolationsOpenDataDoc"))
+file.remove("data-raw/documentation/ViolationsOpenDataDoc")
 
 # Data Files --------------------------------------------------------------
 
@@ -39,9 +37,7 @@ data_urls <- read_html("http://www1.nyc.gov/site/hpd/about/violation-open-data.p
 
 # There is one file where the name uses "Violation" not "Violations", the one linked to is valid
 
-walk(data_urls, download_files, filename = "Violation", outdir = here("data-raw", "violations"))
+walk(data_urls, download_files, filename = "Violation", outdir = "data-raw/violations")
 
 # Delete xml and zip files
-here("data-raw", "violations") %>%
-  dir(pattern = "\\.(xml|zip)$", full.names = TRUE) %>% 
-  file.remove()
+dir("data-raw/violations", pattern = "\\.(xml|zip)$", full.names = TRUE) %>% file.remove()
