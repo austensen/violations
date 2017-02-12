@@ -4,6 +4,9 @@ library(stringr)
 library(here)
 library(sf)
 
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-raw/crosswalks", showWarnings = FALSE)
+
 tracts <- st_read("https://data.cityofnewyork.us/api/geospatial/fxpq-c8ku?method=export&format=GeoJSON",
                   stringsAsFactors = FALSE) %>% 
   mutate(county = recode(boro_name, "Manhattan" = "061",
@@ -23,6 +26,6 @@ tract_xwalk <- tracts %>%
   select(-geometry)
   
 
-write_feather(tract_xwalk, here("data-raw", "tract2010_nta_xwalk.feather"))
+write_feather(tract_xwalk, "data-raw/crosswalks/tract2010_nta_xwalk.feather")
 
 # st_write(tracts, here("data-raw", "census_tracts_2010.shp"))
