@@ -67,7 +67,7 @@ violation_cols <- cols(
 )
 
 extract_records <- function(.year, file, path = NULL, date_col, col_specs = NULL) {
-  f <- function(x, pos) filter_(x, str_interp("lubridate::year(${col}) == ${.year}"))
+  f <- function(x, pos) filter_(x, str_interp("lubridate::year(${date_col}) == ${.year}"))
   
   df <- readr::read_csv_chunked(file, DataFrameCallback$new(f), chunk_size = 10000, col_types = col_specs)
   
@@ -75,18 +75,13 @@ extract_records <- function(.year, file, path = NULL, date_col, col_specs = NULL
     mutate(bbl = str_c(BoroID, str_pad(Block, 5, "left", "0"), str_pad(Lot, 4, "left", "0")),
            year = .year) %>% 
     group_by(bbl, Class, year) %>% 
-    summarise(violations = n())
+    summarise(violations = n()) %>% 
+    ungroup %>% 
+    mutate(class_year = str_c("viol", str_to_lower(Class), year, sep = "_")) %>% 
+    select(bbl, class_year, violations)
 }
 
-map_df(2013:2015, extract_records, file = "data-raw/hpd_violations/hpd_violations.csv", 
+map_df(2013:2016, extract_records, file = "data-raw/hpd_violations/hpd_violations.csv", 
        date_col = "InspectionDate", col_specs = violation_cols) %>% 
-  unite(class_year, Class, year) %>% 
   spread(class_year, violations, fill = 0) %>% 
-  write_feather("data-raw/hpd_violations/hpd_violations_13_15.feather")
-
-
-map_df(2016, extract_records, file = "data-raw/hpd_violations/hpd_violations.csv", 
-       date_col = "InspectionDate", col_specs = violation_cols) %>% 
-  unite(class_year, Class, year) %>% 
-  spread(class_year, violations, fill = 0) %>% 
-  write_feather("data-raw/hpd_violations/hpd_violations_16.feather")
+  write_feather("data-raw/hpd_violations/hpd_violations.feather")
