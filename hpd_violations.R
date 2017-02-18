@@ -19,6 +19,10 @@ file.rename("data-raw/documentation/ViolationsOpenDataDoc/HPD Violation Open Dat
 download.file("https://www1.nyc.gov/assets/buildings/pdf/HousingMaintenanceCode.pdf",
               "data-raw/documentation/HousingMaintenanceCode.pdf", mode = "wb", quiet = TRUE)
 
+# Delete all fies in unwanted subdirectory, then the subdirectory itself 
+dir("data-raw/documentation/ViolationsOpenDataDoc", full.names = TRUE) %>% file.remove() 
+
+file.remove("data-raw/documentation/ViolationsOpenDataDoc") 
 
 # Download Data -----------------------------------------------------------
 
