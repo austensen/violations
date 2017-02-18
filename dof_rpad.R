@@ -12,26 +12,32 @@ dir.create("data-raw/rpad", showWarnings = FALSE)
 download.file("http://www1.nyc.gov/assets/finance/downloads/tar/tarfieldcodes.pdf",
               "data-raw/documentation/rpad_data_dictionary.pdf", mode = "wb", quiet = TRUE)
 
-
 # Download Data -----------------------------------------------------------
 
+download_unzip <- function(class, yy) {
+  download.file(str_interp("http://www1.nyc.gov/assets/finance/downloads/tar/tc${class}_${yy}.zip"), 
+                str_interp("data-raw/rpad/tc${class}_${yy}.zip"), mode = "wb", quiet = TRUE)
+  unzip(str_interp("data-raw/rpad/tc${class}_${yy}.zip"), exdir = "data-raw/rpad")
+}
+
 # 2015
-download.file("http://www1.nyc.gov/assets/finance/downloads/tar/tc234_15.zip", 
-              "data-raw/rpad/tc234_15.zip", mode = "wb", quiet = TRUE)
 
-unzip("data-raw/rpad/tc234_15.zip", exdir = "data-raw/rpad")
+walk(c("1", "234"), download_unzip, yy = 15)
 
-mdb.get("data-raw/rpad/tc234_15.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_15.csv")
+mdb.get("data-raw/rpad/TC1.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_15.csv")
+mdb.get("data-raw/rpad/tc234_15.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_15.csv", append = TRUE)
+
+dir("data-raw/rpad", pattern = "\\.(mdb|zip)$", full.names = TRUE) %>% file.remove()
 
 
 # 2016
-download.file("http://www1.nyc.gov/assets/finance/downloads/tar/tc234_16.zip", 
-              "data-raw/rpad/tc234_16.zip", mode = "wb", quiet = TRUE)
 
-unzip("data-raw/rpad/tc234_16.zip", exdir = "data-raw/rpad")
+walk(c("1", "234"), download_unzip, yy = 16)
 
-mdb.get("data-raw/rpad/tc234.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_16.csv")
+mdb.get("data-raw/rpad/tc1.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_16.csv")
+mdb.get("data-raw/rpad/tc234.mdb") %>% .[[2]] %>% write_csv("data-raw/rpad/rpad_16.csv", append = TRUE)
 
+dir("data-raw/rpad", pattern = "\\.(mdb|zip)$", full.names = TRUE) %>% file.remove()
 
 # Clean RPAD --------------------------------------------------------------
 
@@ -155,23 +161,26 @@ rpad_cols <- cols(
   SM.CHGDT = col_character()
 )
 
-clean_rpad <- function(yr) {
-  str_interp("data-raw/rpad/rpad_${yr}.csv") %>% 
-    read_csv(col_types = rpad_cols) %>% 
-    janitor::clean_names() %>% 
-    filter(str_detect(txcl, "2"), is.na(ease), res_unit > 0) %>%
-    mutate(bbl = as.character(bble),
-           assessed_value = fn_avt_a,
-           year_built = pmax(yrb, yrb_rng, na.rm = TRUE),
-           year_reno = pmax(yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
-           cd = (boro * 100) + cp_dist) %>% 
-    mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .))) %>% 
-    rename(res_units = res_unit, stories = story, buildings = bldgs, gross_sqft = gr_sqft, building_class = bldgcl) %>% 
-    select(bbl, cd, res_units, assessed_value, year_built, year_reno, stories, buildings, gross_sqft, zoning, building_class) %>% 
-    write_feather(str_interp("data-raw/rpad/rpad_${yr}.feather"))
+clean_rpad <- function(x, pos) {
+  x %>% 
+  janitor::clean_names() %>% 
+  filter(is.na(ease), res_unit > 1) %>%
+  mutate(bbl = as.character(bble),
+         assessed_value = fn_avt_a,
+         year_built = pmax(yrb, yrb_rng, na.rm = TRUE),
+         year_reno = pmax(yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
+         cd = (boro * 100) + cp_dist) %>% 
+  mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .))) %>% 
+  rename(res_units = res_unit, stories = story, buildings = bldgs, gross_sqft = gr_sqft, building_class = bldgcl) %>% 
+  select(bbl, cd, res_units, assessed_value, year_built, year_reno, stories, buildings, gross_sqft, zoning, building_class) 
 }
 
-walk(15:16, clean_rpad)
+process_rpad <- function(yy) {
+  str_interp("data-raw/rpad/rpad_${yy}.csv") %>% 
+    read_csv_chunked(DataFrameCallback$new(clean_rpad), col_types = rpad_cols) %>% 
+    write_feather(str_interp("data-raw/rpad/rpad_${yy}.feather"))
+}
 
-# Delete mdb and zip files
-dir("data-raw/rpad", pattern = "\\.(mdb|zip)$", full.names = TRUE) %>% file.remove()
+
+walk(15:16, process_rpad)
+
