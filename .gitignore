@@ -33,4 +33,5 @@ packrat/src/
 # data folders
 data/
 data-raw/
-
+# rendered notebooks
+*.nb.html
