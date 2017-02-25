@@ -16,37 +16,21 @@ The purpose of this project is to to predict serious housing code violations in 
 Repository Organization
 -----------------------
 
-`/analysis`
+`/analysis` - R Notebook files for main analysis
 
--   R Notebook files for main analysis
+`/data-import` - All scripts to download raw data and documentation files, clean data, and prep for joining all sources
 
-`/data-import`
+`/data-raw` - All raw data files downloaded, and cleaned individual data sets
 
--   All scripts to download raw data and documentation files, clean data, and prep for joining all sources
+`/data-documentation` - All documentation files downloaded for data sources
 
-`/data-raw`
+`/data` - Final sample data set(s) after joining all sources
 
--   All raw data files downloaded, and cleaned individual data sets
+`/functions` - All utility functions used thoughout project
 
-`/data-documentation`
+`/presentations` - Slide presentations for class
 
--   All documentation files downloaded for data sources
-
-`/data`
-
--   Final sample data set(s) after joining all sources
-
-`/functions`
-
--   All utility functions used thoughout project
-
-`/presentations`
-
--   Slide presentations for class
-
-`/packrat`
-
--   Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system (do not edit)
+`/packrat` - Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system (do not edit)
 
 To-Do
 -----
