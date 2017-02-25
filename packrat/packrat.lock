@@ -69,7 +69,7 @@ Package: broom
 Source: CRAN
 Version: 0.4.2
 Hash: 7ebcffa46afb467e3f3c5687946f6e1a
-Requires: dplyr, plyr, psych, reshape2, stringr, tidyr
+Requires: dplyr, nlme, plyr, psych, reshape2, stringr, tidyr
 
 Package: caTools
 Source: CRAN
@@ -82,6 +82,11 @@ Source: CRAN
 Version: 1.8.2
 Hash: ca9a37c13c0fead85d580384ce5e25dc
 Requires: backports
+
+Package: clipr
+Source: CRAN
+Version: 0.3.2
+Hash: cab1335d98f5d12219e4b27562cd4cd7
 
 Package: colorspace
 Source: CRAN
@@ -97,6 +102,12 @@ Package: data.table
 Source: CRAN
 Version: 1.10.0
 Hash: 3be20bb55823803066dce2a38d52cafb
+
+Package: datapasta
+Source: CRAN
+Version: 1.1.0
+Hash: 611bcea2f4f5e9605e53e35eb1a84a86
+Requires: clipr, readr, rstudioapi
 
 Package: devtools
 Source: CRAN
@@ -306,6 +317,11 @@ Version: 0.4.3
 Hash: f96d896947fcaf9b6d0074002e9f4f9d
 Requires: colorspace
 
+Package: nlme
+Source: CRAN
+Version: 3.1-131
+Hash: 7f5580f9c481d6921298f224c391b308
+
 Package: openssl
 Source: CRAN
 Version: 0.9.6
@@ -423,8 +439,8 @@ Hash: 1ad6b1cc11d982ac233bf2fa2f7c9684
 
 Package: stringr
 Source: CRAN
-Version: 1.1.0
-Hash: 4d21d0063b37a17ea18eaec6acd29bf3
+Version: 1.2.0
+Hash: 25a86d7f410513ebb7c0bc6a5e16bdc3
 Requires: magrittr, stringi
 
 Package: tibble
