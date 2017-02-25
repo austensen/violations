@@ -165,14 +165,19 @@ clean_rpad <- function(x, pos) {
   x %>% 
   janitor::clean_names() %>% 
   filter(is.na(ease), res_unit > 1) %>%
-  mutate(bbl = as.character(bble),
-         assessed_value = fn_avt_a,
-         year_built = pmax(yrb, yrb_rng, na.rm = TRUE),
-         year_reno = pmax(yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
-         cd = (boro * 100) + cp_dist) %>% 
-  mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .))) %>% 
-  rename(res_units = res_unit, stories = story, buildings = bldgs, gross_sqft = gr_sqft, building_class = bldgcl) %>% 
-  select(bbl, cd, res_units, assessed_value, year_built, year_reno, stories, buildings, gross_sqft, zoning, building_class) 
+  transmute(bbl = as.character(bble),
+            cd = as.integer((boro * 100) + cp_dist),
+            res_units = res_unit,
+            other_units = tot_unit - res_unit,
+            assessed_value = fn_avt_a,
+            year_built = pmax(yrb, yrb_rng, na.rm = TRUE),
+            year_reno = pmax(yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
+            floors = story,
+            buildings = bldgs,
+            new_lot = newlot,
+            building_class = bldgcl,
+            zoning = zoning) %>% 
+  mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .))) 
 }
 
 process_rpad <- function(yy) {
