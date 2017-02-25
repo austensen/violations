@@ -138,14 +138,14 @@ clean_pluto <- function(x, pos) {
               res_units = unitsres,
               other_units = unitstotal - unitsres,
               year_built = yearbuilt,
-              year_reno = pmax(yearalter1, yearalter2),
+              year_reno = pmax(yearalter1, yearalter2, na.rm = TRUE),
               buildings = numbldgs,
               floors = numfloors, 
               building_class = bldgclass, 
               basement_code = bsmtcode,
               owner_type = ownertype,
               lot_area = lotarea,
-              avg_res_unit_sqft = resarea / res_units) %>% 
+              res_sqft = resarea) %>% 
     mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .)))
 }
 
