@@ -14,7 +14,7 @@ library(feather)
 ```
 
 ```{r}
-df <- read_feather("data/merged.feather")
+df <- read_feather("../data/merged.feather")
 ```
 
 ```{r}
