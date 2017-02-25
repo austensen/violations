@@ -25,12 +25,12 @@ file.remove("data-raw/dcp_pluto/nyc_pluto_16v2.zip")
 # Stack separate borough files --------------------------------------------
 
 # Start by reading manhattan file, and writing to new csv
-read_lines("data-raw/dcp_pluto/BORO_zip_files_csv/MN.csv") %>% write_lines("data-raw/dcp_pluto/pluto_16v2.csv")
+read_lines("data-raw/dcp_pluto/BORO_zip_files_csv/MN.csv") %>% write_lines("data-raw/dcp_pluto/pluto_16.csv")
 
 # Then read each other boro (skipping header) and append to the new all-boroughs file
 c("BX", "BK", "QN", "SI")  %>% 
   walk(~ read_lines(str_interp("data-raw/dcp_pluto/BORO_zip_files_csv/${.x}.csv"), skip = 1) %>% 
-         write_lines("data-raw/dcp_pluto/pluto_16v2.csv", append = TRUE))
+         write_lines("data-raw/dcp_pluto/pluto_16.csv", append = TRUE))
 
 # Delete all fies in unwanted subdirectory, then the subdirectory itself 
 dir("data-raw/dcp_pluto/BORO_zip_files_csv", full.names = TRUE) %>% file.remove() 
@@ -127,5 +127,32 @@ pluto_cols <- cols(
 )
 
 
+clean_pluto <- function(x, pos) {
+  x %>% 
+    janitor::clean_names() %>% 
+    filter(easements == 0, unitsres > 1) %>% 
+    transmute(bbl = str_sub(bbl, 1, 10),
+              cd = cd,
+              tract10 = if_else(str_detect(ct2010, "\\."), str_replace(ct2010, "\\.", ""), str_c(ct2010, "00")),
+              tract10 = str_pad(tract10, 6, "left", "0"),
+              res_units = unitsres,
+              other_units = unitstotal - unitsres,
+              year_built = yearbuilt,
+              year_reno = pmax(yearalter1, yearalter2),
+              buildings = numbldgs,
+              floors = numfloors, 
+              building_class = bldgclass, 
+              basement_code = bsmtcode,
+              owner_type = ownertype,
+              lot_area = lotarea,
+              avg_res_unit_sqft = resarea / res_units) %>% 
+    mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .)))
+}
 
+process_pluto <- function(yy) {
+  str_interp("data-raw/dcp_pluto/pluto_${yy}.csv") %>% 
+    read_csv_chunked(DataFrameCallback$new(clean_pluto), col_types = pluto_cols) %>% 
+    write_feather(str_interp("data-raw/dcp_pluto/pluto_${yy}.feather"))
+}
 
+walk(16, process_pluto)
