@@ -41,6 +41,8 @@ To-Do
     -   Overall prevelence of (serious) housing code violations
     -   Accuracy of simple prediction based on presence of violations in the perious year
     -   ...
+-   add step to `merge_all.R` that creates larger geography level indicators
+    -   eg. buildings with violations in the block/tract/NTA etc.
 
 ### Data source wish-list
 
