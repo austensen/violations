@@ -21,7 +21,6 @@ unzip("data-raw/dcp_pluto/nyc_pluto_16v2.zip", exdir = "data-raw/dcp_pluto")
 
 file.remove("data-raw/dcp_pluto/nyc_pluto_16v2.zip")
 
-
 # Stack separate borough files --------------------------------------------
 
 # Start by reading manhattan file, and writing to new csv
@@ -133,8 +132,9 @@ clean_pluto <- function(x, pos) {
     filter(easements == 0, unitsres >= 3) %>% 
     transmute(bbl = str_sub(bbl, 1, 10),
               cd = cd,
+              county = recode(borocode, `1` = "061", `2` = "005", `3` = "047", `4` = "081", `5` = "085"),
               tract10 = if_else(str_detect(ct2010, "\\."), str_replace(ct2010, "\\.", ""), str_c(ct2010, "00")),
-              tract10 = str_pad(tract10, 6, "left", "0"),
+              tract10 = str_c(county, str_pad(tract10, 6, "left", "0")),
               res_units = unitsres,
               other_units = unitstotal - unitsres,
               year_built = yearbuilt,
