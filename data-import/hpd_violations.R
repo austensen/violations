@@ -2,32 +2,32 @@ library(tidyverse)
 library(feather)
 library(stringr)
 
-dir.create("../data-raw", showWarnings = FALSE)
-dir.create("../data-documentation", showWarnings = FALSE)
-dir.create("../data-raw/hpd_violations", showWarnings = FALSE)
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-documentation", showWarnings = FALSE)
+dir.create("data-raw/hpd_violations", showWarnings = FALSE)
 
 # Download Documentation --------------------------------------------------
 
 download.file("http://www1.nyc.gov/assets/hpd/downloads/misc/ViolationsOpenDataDoc.zip", 
-              "../data-documentation/ViolationsOpenDataDoc.zip", mode = "wb", quiet = TRUE)
+              "data-documentation/ViolationsOpenDataDoc.zip", mode = "wb", quiet = TRUE)
 
-unzip("../data-documentation/ViolationsOpenDataDoc.zip", exdir = "../data-documentation")
+unzip("data-documentation/ViolationsOpenDataDoc.zip", exdir = "data-documentation")
 
-file.rename("../data-documentation/ViolationsOpenDataDoc/HPD Violation Open Data.pdf",
-            "../data-documentation/HPD Violation Open Data.pdf")
+file.rename("data-documentation/ViolationsOpenDataDoc/HPD Violation Open Data.pdf",
+            "data-documentation/HPD Violation Open Data.pdf")
 
 download.file("https://www1.nyc.gov/assets/buildings/pdf/HousingMaintenanceCode.pdf",
-              "../data-documentation/HousingMaintenanceCode.pdf", mode = "wb", quiet = TRUE)
+              "data-documentation/HousingMaintenanceCode.pdf", mode = "wb", quiet = TRUE)
 
 # Delete all fies in unwanted subdirectory, then the subdirectory itself 
-dir("../data-documentation/ViolationsOpenDataDoc", full.names = TRUE) %>% file.remove() 
+dir("data-documentation/ViolationsOpenDataDoc", full.names = TRUE) %>% file.remove() 
 
-file.remove("../data-raw/documentation/ViolationsOpenDataDoc") 
+file.remove("data-raw/documentation/ViolationsOpenDataDoc") 
 
 # Download Data -----------------------------------------------------------
 
 download.file("https://data.cityofnewyork.us/api/views/wvxf-dwi5/rows.csv?accessType=DOWNLOAD",
-              str_interp("../data-raw/hpd_violations/hpd_violations.csv"), mode = "wb", quiet = TRUE)
+              str_interp("data-raw/hpd_violations/hpd_violations.csv"), mode = "wb", quiet = TRUE)
 
 
 # Import and Clean --------------------------------------------------------
@@ -81,7 +81,7 @@ extract_records <- function(.year, file, path = NULL, date_col, col_specs = NULL
     select(bbl, class_year, violations)
 }
 
-map_df(2013:2016, extract_records, file = "../data-raw/hpd_violations/hpd_violations.csv", 
+map_df(2013:2016, extract_records, file = "data-raw/hpd_violations/hpd_violations.csv", 
        date_col = "InspectionDate", col_specs = violation_cols) %>% 
   spread(class_year, violations, fill = 0) %>% 
-  write_feather("../data-raw/hpd_violations/hpd_violations.feather")
+  write_feather("data-raw/hpd_violations/hpd_violations.feather")

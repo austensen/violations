@@ -2,21 +2,21 @@ library(tidyverse)
 library(stringr)
 library(feather)
 
-dir.create("../data-raw", showWarnings = FALSE)
-dir.create("../data-documentation", showWarnings = FALSE)
-dir.create("../data-raw/hpd_litigation", showWarnings = FALSE)
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-documentation", showWarnings = FALSE)
+dir.create("data-raw/hpd_litigation", showWarnings = FALSE)
 
 # Download Documentation --------------------------------------------------
 
 download.file("http://www1.nyc.gov/assets/hpd/downloads/pdf/LitigationOpenDataDoc.zip", 
-              "../data-documentation/LitigationOpenDataDoc.zip", mode = "wb", quiet = TRUE)
+              "data-documentation/LitigationOpenDataDoc.zip", mode = "wb", quiet = TRUE)
 
-unzip("../data-documentation/LitigationOpenDataDoc.zip", exdir = "../data-documentation")
+unzip("data-documentation/LitigationOpenDataDoc.zip", exdir = "data-documentation")
 
 # Download Data -----------------------------------------------------------
 
 download.file("https://data.cityofnewyork.us/api/views/59kj-x8nc/rows.csv?accessType=DOWNLOAD",
-              str_interp("../data-raw/hpd_litigation/hpd_litigation.csv"), method = "curl", quiet = TRUE)
+              str_interp("data-raw/hpd_litigation/hpd_litigation.csv"), method = "curl", quiet = TRUE)
 
 # Clean Litigations -------------------------------------------------------
 
@@ -36,7 +36,7 @@ litigation_cols <- cols(
   CaseJudgement = col_character()
 )
 
-lit_raw <- read_csv("../data-raw/hpd_litigation/hpd_litigation.csv", col_types = litigation_cols)
+lit_raw <- read_csv("data-raw/hpd_litigation/hpd_litigation.csv", col_types = litigation_cols)
 
 case_type_codes <- tibble(case_type = unique(lit_raw$CaseType)) %>% mutate(type_code = row_number())
 
@@ -53,4 +53,4 @@ lit_clean <- lit_raw %>%
   filter(!is.na(type_year)) %>% 
   spread(type_year, litigation, fill = 0) 
 
-write_feather(lit_clean, "../data-raw/hpd_litigation/hpd_litigation.feather")
+write_feather(lit_clean, "data-raw/hpd_litigation/hpd_litigation.feather")
