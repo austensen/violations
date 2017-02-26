@@ -66,22 +66,19 @@ violation_cols <- cols(
   CurrentStatusDate = col_date("%m/%d/%Y")
 )
 
-extract_records <- function(.year, file, path = NULL, date_col, col_specs = NULL) {
-  f <- function(x, pos) filter_(x, str_interp("lubridate::year(${date_col}) == ${.year}"))
-  
-  df <- readr::read_csv_chunked(file, DataFrameCallback$new(f), chunk_size = 10000, col_types = col_specs)
-  
-  df %>% 
-    mutate(bbl = str_c(BoroID, str_pad(Block, 5, "left", "0"), str_pad(Lot, 4, "left", "0")),
-           year = .year) %>% 
-    group_by(bbl, Class, year) %>% 
-    summarise(violations = n()) %>% 
-    ungroup %>% 
-    mutate(class_year = str_c("viol", str_to_lower(Class), year, sep = "_")) %>% 
-    select(bbl, class_year, violations)
-}
+viol <- read_csv("data-raw/hpd_violations/hpd_violations.csv", col_types = violation_cols) %>% 
+  janitor::clean_names() %>% 
+  filter(lubridate::year(inspectiondate) %in% 2013:2016) %>% 
+  mutate(bbl = str_c(boroid, str_pad(block, 5, "left", "0"), str_pad(lot, 4, "left", "0")),
+         year = lubridate::year(inspectiondate),
+         scope = if_else(is.na(apartment), "bldg", "apt"),
+         class = str_to_lower(class)) %>% 
+  group_by(bbl, year, class, scope) %>% 
+  summarise(violations = n()) %>% 
+  ungroup %>% 
+  mutate(scope_class_year = str_c("viol", scope, class, year, sep = "_")) %>% 
+  select(bbl, scope_class_year, violations) %>% 
+  spread(scope_class_year, violations, fill = 0)
 
-map_df(2013:2016, extract_records, file = "data-raw/hpd_violations/hpd_violations.csv", 
-       date_col = "InspectionDate", col_specs = violation_cols) %>% 
-  spread(class_year, violations, fill = 0) %>% 
-  write_feather("data-raw/hpd_violations/hpd_violations.feather")
+
+write_feather(viol, "data-raw/hpd_violations/hpd_violations.feather")
