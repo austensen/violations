@@ -164,7 +164,7 @@ rpad_cols <- cols(
 clean_rpad <- function(x, pos) {
   x %>% 
   janitor::clean_names() %>% 
-  filter(is.na(ease), res_unit > 1) %>%
+  filter(is.na(ease), res_unit >= 3) %>%
   transmute(bbl = as.character(bble),
             cd = as.integer((boro * 100) + cp_dist),
             res_units = res_unit,
