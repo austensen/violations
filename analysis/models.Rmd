@@ -1,0 +1,102 @@
+---
+title: "R Notebook"
+output:
+  github_document: default
+  html_notebook: default
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+library(plyr)
+library(tidyverse)
+library(stringr)
+library(caret)
+
+set.seed(2017)
+```
+
+# Prep Data
+
+```{r data-prep, cache=TRUE}
+df <- feather::read_feather("../data/merged.feather") %>% na.omit()
+
+df_15 <- df %>% 
+  mutate(viol_c_all_2015 = viol_bldg_c_2015 + viol_apt_c_2015,
+         outcome = factor(viol_c_all_2015 > 0)) %>% 
+  select(-matches("2015|2016$"), -bbl, -tract10) %>% 
+  mutate(zoning = stringr::str_sub(zoning, 1, 1),
+         building_class = stringr::str_sub(building_class, 1, 1)) %>%
+  mutate_if(is.character, as.factor) %>% 
+  na.omit
+
+names(df_15) <- names(df_15) %>% str_replace_all("2014", "1") %>% str_replace_all("2013", "2")
+
+df_16 <- df %>% 
+  mutate(viol_c_all_2016 = viol_bldg_c_2016 + viol_apt_c_2016,
+         outcome = factor(viol_c_all_2016 > 0)) %>% 
+  select(-matches("2013|2016$"), -bbl, -tract10) %>% 
+  mutate(zoning = stringr::str_sub(zoning, 1, 1),
+         building_class = stringr::str_sub(building_class, 1, 1)) %>%
+  mutate_if(is.character, as.factor) %>% 
+  na.omit
+
+names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_all("2014", "2")
+```
+
+---
+
+# Logit 
+
+```{r glm-fit, cache=TRUE, dependson='data-prep'}
+glm_fit <- glm(outcome ~ ., family = "binomial", df_15)
+
+glm_p <- predict(glm_fit, df_16, type = "response")
+
+print_results <- function(threshold, preditions) {
+  ret <- if_else(preditions > threshold, TRUE, FALSE) %>% 
+    as.factor %>% 
+    confusionMatrix(df_16[["outcome"]])
+  
+  message(str_c("Threshold: ", threshold))
+  print(ret)
+}
+
+# walk(seq(0.1, 0.9, 0.1), print_results, preditions = glm_p)
+
+print_results(.5, glm_p)
+```
+
+---
+
+# Decision Tree
+
+```{r tree-fit, cache=TRUE, dependson='data-prep'}
+tree_fit_control <- trainControl(method = "repeatedcv", number = 10, repeats = 10)
+
+tree_fit <- train(outcome ~ ., data = df_15, 
+                  method = "rpart", 
+                  trControl = tree_fit_control)
+
+tree_p <- predict(tree_fit, newdata = df_16)
+
+confusionMatrix(tree_p, df_16[["outcome"]])
+```
+
+---
+
+# Random Forest 
+
+```{r forest-fit, cache=TRUE, dependson='data-prep'}
+forest_fit_control <- trainControl(method = "repeatedcv", number = 10)
+
+forest_fit <- train(outcome ~ ., data = df_15, 
+                    method = "rf", 
+                    tuneGrid=data.frame(mtry=3),
+                    trControl = forest_fit_control)
+
+forest_p <- predict(forest_fit, newdata = df_16)
+
+confusionMatrix(forest_p, df_16[["outcome"]])
+```
+
+
+
