@@ -25,8 +25,9 @@ lit <- read_feather("data-raw/hpd_litigation/hpd_litigation.feather")
 df <- building_info %>% 
   left_join(viol, by = "bbl") %>% 
   left_join(lit, by = "bbl") %>% 
-  mutate_at(vars(matches("\\d{4}$")), funs(if_else(is.na(.), 0, .)))
+  mutate_at(vars(matches("\\d{4}$")), funs(if_else(is.na(.), 0, .))) %>% 
+  mutate_at(vars(matches("^viol_apt")), funs(. / res_units))
 
 write_feather(df, "data/merged.feather")
 
-
+zip("data/merged.zip", "data/merged.feather")
