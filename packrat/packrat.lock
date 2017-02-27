@@ -25,6 +25,23 @@ Hash: 4d3704cb29c9fd363837f2db54b1eb57
 Requires: Formula, acepack, base64enc, data.table, ggplot2, gridExtra,
     gtable, htmlTable, htmltools, latticeExtra, viridis
 
+Package: Matrix
+Source: CRAN
+Version: 1.2-8
+Hash: 496395eb8eae0fc9a82c8d60758f544c
+
+Package: MatrixModels
+Source: CRAN
+Version: 0.4-1
+Hash: 60a5c75e57aae4a0ce76cb7422939aaf
+Requires: Matrix
+
+Package: ModelMetrics
+Source: CRAN
+Version: 1.1.0
+Hash: 26a75216d50f787ebb12bc3552762837
+Requires: Rcpp
+
 Package: R6
 Source: CRAN
 Version: 2.2.0
@@ -39,6 +56,16 @@ Package: Rcpp
 Source: CRAN
 Version: 0.12.9
 Hash: 7ab41cbe74918de8de87e435ef17e92d
+
+Package: RcppEigen
+Source: CRAN
+Version: 0.3.2.9.0
+Requires: Matrix, Rcpp
+
+Package: SparseM
+Source: CRAN
+Version: 1.74
+Hash: 6e721db472ee268f293f33dff509c615
 
 Package: acepack
 Source: CRAN
@@ -76,6 +103,18 @@ Source: CRAN
 Version: 1.17.1
 Hash: 97cb6f6293cd18d17df77a6383cc6763
 Requires: bitops
+
+Package: car
+Source: CRAN
+Version: 2.1-4
+Hash: d8cc2f66d4ba0c91312f1c1c5773d502
+Requires: mgcv, pbkrtest, quantreg
+
+Package: caret
+Source: CRAN
+Version: 6.0-73
+Hash: b4b1006c635b016d1e33a98789e228ba
+Requires: ModelMetrics, car, foreach, ggplot2, nlme, plyr, reshape2
 
 Package: checkmate
 Source: CRAN
@@ -149,6 +188,12 @@ Source: CRAN
 Version: 0.2.0
 Hash: e5a3b0b96a39f5581467b0c6366f7408
 Requires: magrittr, tibble
+
+Package: foreach
+Source: CRAN
+Version: 1.4.3
+Hash: cd53ef4cf29dc59ce3f8c5c1af735fd1
+Requires: iterators
 
 Package: formatR
 Source: CRAN
@@ -233,6 +278,11 @@ Version: 1.2.1
 Hash: 7de1f8f760441881804af7c1ff324340
 Requires: R6, curl, jsonlite, mime, openssl
 
+Package: iterators
+Source: CRAN
+Version: 1.0.8
+Hash: 488b93c2a4166db0d15f1e8d882cb1d4
+
 Package: janitor
 Source: CRAN
 Version: 0.2.1
@@ -266,6 +316,12 @@ Source: CRAN
 Version: 0.2.0
 Hash: 3d6e7608e65bbf5cb170dab1e3c9ed8b
 
+Package: lme4
+Source: CRAN
+Version: 1.1-12
+Hash: d306e239f525642f2e0d83433e811bd7
+Requires: Matrix, Rcpp, RcppEigen, minqa, nlme, nloptr
+
 Package: lubridate
 Source: CRAN
 Version: 1.6.0
@@ -289,6 +345,12 @@ Version: 1.0.0
 Hash: 56e7087c3559eb7ba72a9afb349bf896
 Requires: digest
 
+Package: mgcv
+Source: CRAN
+Version: 1.8-17
+Hash: ee65c710770c125c6030b810d8594c1f
+Requires: Matrix, nlme
+
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -299,6 +361,12 @@ Source: CRAN
 Version: 0.1.1
 Hash: e85626581f80b1fe6c92a96ec348efc5
 Requires: htmltools, shiny
+
+Package: minqa
+Source: CRAN
+Version: 1.2.4
+Hash: c6589c93323b465a07618bae6f6ec7ed
+Requires: Rcpp
 
 Package: mnormt
 Source: CRAN
@@ -322,6 +390,11 @@ Source: CRAN
 Version: 3.1-131
 Hash: 7f5580f9c481d6921298f224c391b308
 
+Package: nloptr
+Source: CRAN
+Version: 1.0.4
+Hash: 8053df240a4635aeb54fc68c6de67709
+
 Package: openssl
 Source: CRAN
 Version: 0.9.6
@@ -331,6 +404,12 @@ Package: packrat
 Source: CRAN
 Version: 0.4.8-1
 Hash: 6ad605ba7b4b476d84be6632393f5765
+
+Package: pbkrtest
+Source: CRAN
+Version: 0.4-6
+Hash: 8117c37e2e3078e3c6465134bac6956e
+Requires: Matrix, lme4
 
 Package: plyr
 Source: CRAN
@@ -349,6 +428,12 @@ Source: CRAN
 Version: 0.2.2
 Hash: e06b50a541f3a0965edd8e8533ff28ac
 Requires: BH, Rcpp, dplyr, lazyeval, magrittr
+
+Package: quantreg
+Source: CRAN
+Version: 5.29
+Hash: a06b5a1adfd5068a49e8e960b884d08e
+Requires: Matrix, MatrixModels, SparseM
 
 Package: readr
 Source: github
