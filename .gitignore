@@ -35,3 +35,5 @@ data/*.feather
 data-raw/
 # rendered notebooks
 *.nb.html
+# cache results
+analysis/models_cache/
