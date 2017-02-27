@@ -3,9 +3,11 @@ R Notebook
 
 ``` r
 library(plyr)
+library(rpart)
+library(randomForest)
+library(caret)
 library(tidyverse)
 library(stringr)
-library(caret)
 
 set.seed(2017)
 ```
@@ -46,18 +48,9 @@ Logit
 
 ``` r
 glm_fit <- glm(outcome ~ ., family = "binomial", df_15)
-```
 
-    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-``` r
 glm_p <- predict(glm_fit, df_16, type = "response")
-```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
-    ## ifelse(type == : prediction from a rank-deficient fit may be misleading
-
-``` r
 print_results <- function(threshold, preditions) {
   ret <- if_else(preditions > threshold, TRUE, FALSE) %>% 
     as.factor %>% 
@@ -112,11 +105,7 @@ tree_fit_control <- trainControl(method = "repeatedcv", number = 10, repeats = 1
 tree_fit <- train(outcome ~ ., data = df_15, 
                   method = "rpart", 
                   trControl = tree_fit_control)
-```
 
-    ## Loading required package: rpart
-
-``` r
 tree_p <- predict(tree_fit, newdata = df_16)
 
 confusionMatrix(tree_p, df_16[["outcome"]])
@@ -161,26 +150,7 @@ forest_fit <- train(outcome ~ ., data = df_15,
                     method = "rf", 
                     tuneGrid=data.frame(mtry=3),
                     trControl = forest_fit_control)
-```
 
-    ## Loading required package: randomForest
-
-    ## randomForest 4.6-12
-
-    ## Type rfNews() to see new features/changes/bug fixes.
-
-    ## 
-    ## Attaching package: 'randomForest'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     combine
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     margin
-
-``` r
 forest_p <- predict(forest_fit, newdata = df_16)
 
 confusionMatrix(forest_p, df_16[["outcome"]])

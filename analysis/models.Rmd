@@ -7,9 +7,11 @@ output:
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(plyr)
+library(rpart)
+library(randomForest)
+library(caret)
 library(tidyverse)
 library(stringr)
-library(caret)
 
 set.seed(2017)
 ```
