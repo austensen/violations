@@ -31,7 +31,7 @@ packrat/src/
 # Mac files
 .DS_Store
 # data folders
-data/
+data/*.feather
 data-raw/
 # rendered notebooks
 *.nb.html
