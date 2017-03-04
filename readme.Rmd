@@ -3,38 +3,36 @@ title: "Predicting Housing Code Violations"
 author: "Maxwell Austensen"
 date: '`r Sys.Date()`'
 output:
-  html_notebook: default
   github_document:
     toc: yes
     toc_depth: 3
+  html_notebook: default
 ---
 
-## Overview
+Overview
+--------
 
 The purpose of this project is to to predict serious housing code violations in multi-family rental building in New York City. All data is taken from publically available sources, and is organized at the borough-block-lot (BBL) level. The plan is to use all data available in 2015 to predict violations in 2016. 
 
 
-## Repository Organization
-  
-`/analysis` -  R Notebook files for main analysis
-  
-`/data-import` - All scripts to download raw data and documentation files, clean data, and prep for joining all sources
-  
-`/data-raw` - All raw data files downloaded, and cleaned individual data sets _(git-ignored due to file size)_
-  
-`/data-documentation` - All documentation files downloaded for data sources
-  
-`/data` - Final sample data set(s) after joining all sources _(only samples of data are not git-ignored)_
-  
-`/functions` - All R functions used thoughout project
-  
-`/presentations` - Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan)
-  
-`/packrat` - Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system (do not edit)
+Repository Organization
+------------------------
+
+Directory             | Description
+----------------------|------------------------------------------------------------------------------------------------
+`/analysis`           |  R Notebook files for main analysis
+`/data-import`        | All scripts to download raw data and documentation files, clean data, and prep for joining all sources
+`/data-raw`           | All raw data files downloaded, and cleaned individual data sets _(git-ignored due to file size)_
+`/data-documentation` | All documentation files downloaded for data sources
+`/data`               | Final sample data set(s) after joining all sources _(only samples of data are not git-ignored)_
+`/functions`          | All R functions used thoughout project
+`/presentations`      |Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan)
+`/packrat`            |Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system _(do not edit)_
 
 
 
-## To-Do
+To-Do
+-----
 
 * Switch over from HPD website to NYC open data (charges, and complaints)
 
@@ -43,7 +41,7 @@ The purpose of this project is to to predict serious housing code violations in 
     * Accuracy of simple prediction based on presence of violations in the perious year
     * ...
     
-* add step to `merge_all.R` that creates larger geography level indicators
+* Add step to `merge_all.R` that creates larger geography level indicators
     * eg. buildings with violations in the block/tract/NTA etc.
     
 * Deal with missing data problems
