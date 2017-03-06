@@ -18,16 +18,16 @@ The purpose of this project is to to predict serious housing code violations in 
 Repository Organization
 ------------------------
 
-Directory             | Description
-----------------------|------------------------------------------------------------------------------------------------
-`/analysis`           |  R Notebook files for main analysis
-`/data-import`        | All scripts to download raw data and documentation files, clean data, and prep for joining all sources
-`/data-raw`           | All raw data files downloaded, and cleaned individual data sets _(git-ignored due to file size)_
-`/data-documentation` | All documentation files downloaded for data sources
-`/data`               | Final sample data set(s) after joining all sources _(only samples of data are not git-ignored)_
-`/functions`          | All R functions used thoughout project
-`/presentations`      |Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan)
-`/packrat`            |Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system _(do not edit)_
+Directory              | Description
+-----------------------|------------------------------------------------------------------------------------------------
+`./analysis`           | R Notebook files for main analysis
+`./data-import`        | All scripts to download raw data and documentation files, clean data, and prep for joining all sources
+`./data-raw`           | All raw data files downloaded, and cleaned individual data sets _(git-ignored due to file size)_
+`./data-documentation` | All documentation files downloaded for data sources
+`./data`               | Final sample data set(s) after joining all sources _(only samples of data are not git-ignored)_
+`./functions`          | All R functions used thoughout project
+`./presentations`      | Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan)
+`./packrat`            | Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system _(do not edit)_
 
 
 
@@ -38,7 +38,6 @@ To-Do
 
 * Run basic descriptives on final sample data
     * Overall prevelence of (serious) housing code violations
-    * Accuracy of simple prediction based on presence of violations in the perious year
     * ...
     
 * Add step to `merge_all.R` that creates larger geography level indicators
@@ -48,7 +47,7 @@ To-Do
     * Could simplify features where applicable (eg. first character of `zoning`, `building_class`, etc.)
     * Impute missing data
     
-* May want to separate building-wide and unit-specific violations, and adjust the unit-specific ones by number of units.
+* Add to evaluation of models using tests reccomended in Dietterich (1997) reading
   
   
 ### Data source wish-list
