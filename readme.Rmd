@@ -46,6 +46,7 @@ To-Do
 * Deal with missing data problems
     * Could simplify features where applicable (eg. first character of `zoning`, `building_class`, etc.)
     * Impute missing data
+      * mean imputation, look for values in past years of data (older pluto versions), regressions using other variables, mean by zipcode and builing type for example, see if missing-not-at-random
     
 * Add to evaluation of models using tests reccomended in Dietterich (1997) reading
   
