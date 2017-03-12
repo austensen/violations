@@ -3,6 +3,11 @@ PackratVersion: 0.4.8.1
 RVersion: 3.3.2
 Repos: CRAN=https://cran.rstudio.com/
 
+Package: AUC
+Source: CRAN
+Version: 0.3.0
+Hash: 55d90c41c785de293a22185e33115eed
+
 Package: BH
 Source: CRAN
 Version: 1.62.0-1
@@ -56,6 +61,12 @@ Package: RJSONIO
 Source: CRAN
 Version: 1.3-0
 Hash: fb672e20eb6f3010a3639f855d8ef6de
+
+Package: ROCR
+Source: CRAN
+Version: 1.0-7
+Hash: 086f78987ebf3c55b01013ee64a5e1e2
+Requires: gplots
 
 Package: RWeka
 Source: CRAN
@@ -116,10 +127,14 @@ Version: 1.0-6
 Hash: 67d0775189fd0041d95abca618c5c07e
 
 Package: broom
-Source: CRAN
+Source: github
 Version: 0.4.2
-Hash: 7ebcffa46afb467e3f3c5687946f6e1a
+Hash: f2895d00ba9fc1b8402b98ec14397e6c
 Requires: dplyr, nlme, plyr, psych, reshape2, stringr, tidyr
+GithubRepo: broom
+GithubUsername: tidyverse
+GithubRef: master
+GithubSha1: b0b6f3ce9aadb4a2fe3215f3f0a41b253a30e6eb
 
 Package: caTools
 Source: CRAN
@@ -233,6 +248,12 @@ Source: CRAN
 Version: 2.1.1
 Hash: 4494b719d7755bafdc5f02f1eae40d93
 
+Package: gdata
+Source: CRAN
+Version: 2.17.0
+Hash: e7d520c2a9597b303f54499e3bd90644
+Requires: gtools
+
 Package: ggplot2
 Source: CRAN
 Version: 2.2.1
@@ -243,6 +264,12 @@ Package: git2r
 Source: CRAN
 Version: 0.18.0
 Hash: 9dfaafbcca68be29b89ef7783dc1dac0
+
+Package: gplots
+Source: CRAN
+Version: 3.0.1
+Hash: b7abe122479c203aa236499b7fc4b816
+Requires: caTools, gdata, gtools
 
 Package: gridExtra
 Source: CRAN
@@ -260,6 +287,11 @@ Package: gtable
 Source: CRAN
 Version: 0.2.0
 Hash: cd78381a9d3fea966ac39bd0daaf5554
+
+Package: gtools
+Source: CRAN
+Version: 3.5.0
+Hash: 471b2e2452dfb30fdc1dd6f1b567925a
 
 Package: haven
 Source: CRAN
