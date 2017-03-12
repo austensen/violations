@@ -11,9 +11,11 @@ library(rpart)
 library(randomForest)
 library(caret)
 library(tidyverse)
+library(magrittr)
 library(stringr)
-library(broom)
-library(AUC)
+library(ROCR)
+
+knitr::opts_knit$set(autodep=TRUE)
 
 set.seed(2017)
 ```
@@ -54,11 +56,12 @@ names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_al
 
 First I'll just simply use the presence of serious violations in 2015 to predict for 2016. 
 
-```{r past-viol, cache=TRUE, autodep=TRUE}
-(past_viol_info <- confusionMatrix(df_15[["outcome"]], df_16[["outcome"]]))
+```{r past-viol, cache=TRUE}
+(past_viol_info <- confusionMatrix(df_15[["outcome"]], df_16[["outcome"]], 
+                            positive = "TRUE", mode = "everything"))
 ```
 
-Using the presence of serious violations in 2015 to predict violations for 2016 achieves an accuracy of `r past_viol_info$overall[["Accuracy"]]`, which is only a slight improvement over the no information rate of `r past_viol_info$overall[["AccuracyNull"]]`, and has a Kappa statistic of `r past_viol_info$overall[["Kappa"]]`.
+Using the presence of serious violations in 2015 to predict violations for 2016 achieves an accuracy of `r past_viol_info$overall[["Accuracy"]]`, which is only a slight improvement over the no information rate of `r past_viol_info$overall[["AccuracyNull"]]`. This simple prediction has a Kappa statistic of `r past_viol_info$overall[["Kappa"]]`, its precision is `r past_viol_info$byClass[["Precision"]]` and recall is `r past_viol_info$byClass[["Recall"]]`. 
 
 ---
 
@@ -66,7 +69,7 @@ Using the presence of serious violations in 2015 to predict violations for 2016 
 
 Next I fit a Logit model using all the attributes for the `df_15` training data set. I then get the predicted values on the `df_16` test data and iterate over threshold values, deciding on 0.5.
 
-```{r glm-fit, cache=TRUE, autodep=TRUE}
+```{r glm-fit, message=TRUE, warning=FALSE, cache=TRUE}
 glm_fit <- glm(outcome ~ ., family = "binomial", df_15)
 
 glm_p <- predict(glm_fit, df_16, type = "response")
@@ -80,16 +83,14 @@ print_results <- function(threshold, preditions) {
   print(ret)
 }
 
+# Use this to select a theshold - decided on 0.5
 # walk(seq(0.1, 0.9, 0.1), print_results, preditions = glm_p)
 
-glm_info <- if_else(glm_p > .5, TRUE, FALSE) %>% 
-    as.factor %>% 
-    confusionMatrix(df_16[["outcome"]])
-
-print_results(.5, glm_p)
+(glm_info <- confusionMatrix(as.factor(glm_p > .5), df_16[["outcome"]], 
+                             positive = "TRUE", mode = "everything"))
 ```
 
-The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of `r glm_info$overall[["AccuracyNull"]]`. The Logit model achieves a Kappa statistic of `r glm_info$overall[["Kappa"]]`.
+The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of `r glm_info$overall[["AccuracyNull"]]`. The Logit model achieves a Kappa statistic of `r glm_info$overall[["Kappa"]]`, its precision is `r glm_info$byClass[["Precision"]]`, and recall is `r glm_info$byClass[["Recall"]]`. 
 
 ---
 
@@ -97,19 +98,25 @@ The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, whic
 
 Next I try a simple decision tree with 10 times 10-fold Cross-validation. 
 
-```{r tree-fit, cache=TRUE, autodep=TRUE}
+```{r tree-fit, cache=TRUE}
 tree_fit_control <- trainControl(method = "repeatedcv", number = 10, repeats = 10)
 
 tree_fit <- train(outcome ~ ., data = df_15, 
                   method = "rpart", 
                   trControl = tree_fit_control)
 
-tree_p <- predict(tree_fit, newdata = df_16)
+tree_p <- predict(tree_fit, df_16)
 
-(tree_info <- confusionMatrix(tree_p, df_16[["outcome"]]))
+(tree_info <- confusionMatrix(tree_p, df_16[["outcome"]], positive = "TRUE", mode = "everything"))
 ```
 
-The decision tree's accuracy of `r tree_info$overall[["Accuracy"]]`, is a further improvement over the accuracy Logit model, the previous year's violation prediction, and no information rate. The decision tree model also achieves an improved Kappa statistic of `r tree_info$overall[["Kappa"]]`.
+The decision tree's accuracy of `r tree_info$overall[["Accuracy"]]`, is a further improvement over the accuracy Logit model, the previous year's violation prediction, and no information rate. The decision tree model also achieves an improved Kappa statistic of `r tree_info$overall[["Kappa"]]`, and its precision is `r tree_info$byClass[["Precision"]]`, and recall is `r tree_info$byClass[["Recall"]]`. 
+
+```{r}
+varImp(tree_fit)
+```
+
+As expected, the various indicators of a building's violation record in the current and previous year are the most important attributes for predicting the presence of serious violations in the subsequent year. Additionally, the building's total residential square footage and total lot area, as well as the number of residential units and the total assessed value in the current year are also important.
 
 ---
 
@@ -117,7 +124,7 @@ The decision tree's accuracy of `r tree_info$overall[["Accuracy"]]`, is a furthe
 
 Finally, I use a Random Forest model with 10-fold Cross-validation.
 
-```{r forest-fit, cache=TRUE, autodep=TRUE}
+```{r forest-fit, cache=TRUE}
 forest_fit_control <- trainControl(method = "repeatedcv", number = 10)
 
 forest_fit <- train(outcome ~ ., data = df_15, 
@@ -127,42 +134,103 @@ forest_fit <- train(outcome ~ ., data = df_15,
 
 forest_p <- predict(forest_fit, newdata = df_16)
 
-(forest_info <- confusionMatrix(forest_p, df_16[["outcome"]]))
+(forest_info <- confusionMatrix(forest_p, df_16[["outcome"]], positive = "TRUE", mode = "everything"))
 ```
 
 The Random Forest outperforms all the previous models in terms of accuracy with a value of `r forest_info$overall[["Accuracy"]]`. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of `r past_viol_info$overall[["Accuracy"]]` and `r forest_info$overall[["AccuracyNull"]]`, respectively. The Random Forest also has a Kappa statistic of `r forest_info$overall[["Kappa"]]`.
+
+```{r}
+varImp(forest_fit)
+```
+
+Many of the variables that were important in the single decision tree are also important in the Random Forest model. Others that were important include the number of floors in the building, the Community District in which it is located, and the year it was built.
+
+---
 
 # ROC Space
 
 In addition the the various statistics generated above, it is helpful to visualize the performance of the various models by plotting the models' true positive and false positive rates in a ROC space. Only the Logit model can be plotted as a ROC curve and have an AUC calculated, while the others are represented simply by points in the ROC space.
 
-```{r roc-curve, autodep=TRUE}
-glm_roc <- AUC::roc(glm_p, df_16[["outcome"]])
-glm_auc <- AUC::auc(glm_roc)
+```{r model-preds}
+past_viol_pred <- prediction(as.numeric(df_15[["outcome"]]), df_16[["outcome"]])
 
-past_viol_fpr <- 1 - past_viol_info[["byClass"]][["Specificity"]]
-past_viol_tpr <- past_viol_info[["byClass"]][["Sensitivity"]]
+glm_pred <- prediction(glm_p, df_16[["outcome"]])
 
-tree_fpr <- 1 - tree_info[["byClass"]][["Specificity"]]
-tree_tpr <- tree_info[["byClass"]][["Sensitivity"]]
+tree_pred <- tree_fit %>% 
+  predict(newdata = df_16, type = "prob") %>% 
+  .[[2]] %>%
+  prediction(df_16[["outcome"]])
 
-forest_fpr <- 1 - forest_info[["byClass"]][["Specificity"]]
-forest_tpr <- forest_info[["byClass"]][["Sensitivity"]]
+forest_pred <- forest_fit %>% 
+  predict(newdata = df_16, type = "prob") %>% 
+  .[[2]] %>%
+  prediction(df_16[["outcome"]])
 
-glm_roc %>% 
-  broom::tidy() %>%
-  ggplot(aes(fpr, tpr)) + 
+
+model_preds <- list(past_viol_pred, glm_pred, tree_pred, forest_pred)
+
+model_names <- c("Past Violation", "Logistic Regression", "Decision Tree", "Random Forest")
+```
+
+
+```{r roc-curve, cache=TRUE}
+get_roc_df <- function(.pred, model_name) {
+  .pred %>% 
+  performance("tpr", "fpr") %$% 
+  tibble(model = model_name,
+         fpr = .@x.values[[1]],
+         tpr = .@y.values[[1]],
+         cutoff = .@alpha.values[[1]])
+}
+
+get_auc <- function(.pred) {
+  performance(.pred, "auc")@y.values[[1]]
+}
+
+roc_data <- map2_df(model_preds, model_names, get_roc_df) %>% 
+  mutate(model = ordered(model, model_names))
+
+auc_values <- set_names(model_preds, model_names) %>% map_dbl(get_auc)
+
+roc_line_data <- filter(roc_data, model %in% c("Logistic Regression", "Random Forest"))
+roc_point_data <- anti_join(roc_data, roc_line_data, by = "model")
+
+roc_line_data %>% 
+  ggplot(aes(fpr, tpr, color = model)) + 
   geom_line() +
+  geom_point(data = roc_point_data) +
   geom_segment(x = 0, xend = 1, y = 0, yend = 1, linetype = "dashed", color = "grey") +
-  annotate("text", x = .3, y = .6, label = str_interp("Logit AUC = ${round(glm_auc, 3)}")) +
-  annotate("point", x = past_viol_fpr, y = past_viol_tpr, color = "red") + 
-  annotate("text", x = past_viol_fpr - .15, y = past_viol_tpr, label = "Previous Year Violation", color = "red") +
-  annotate("point", x = tree_fpr, y = tree_tpr, color = "blue") + 
-  annotate("text", x = tree_fpr - .07, y = tree_tpr + .04, label = "Decision Tree", color = "blue") +
-  annotate("point", x = forest_fpr, y = forest_tpr, color = "goldenrod") + 
-  annotate("text", x = forest_fpr + .07, y = forest_tpr + .05, label = "Random Forest", color = "goldenrod") +
+  annotate("text", x = .55, y = .5, hjust = 0, label = "AUC Values:") +
+  annotate("text", x = .55, y = c(.4, .3, .2, .1), hjust = 0,
+           label = str_c(names(auc_values), ": ", round(auc_values, 2))) +
   labs(title = "ROC Space",
        subtitle = "Any Serious Violations in 2016",
-       x = "False Positive Rate", y = "True Positive Rate")
+       color = NULL, x = "False Positive Rate", y = "True Positive Rate")
+```
+
+```{r pr-curve, cache=TRUE}
+get_prec_rec_df <- function(.pred, model_name) {
+  .pred %>% 
+  performance("prec", "rec") %$% 
+  tibble(model = model_name,
+         recall = .@x.values[[1]],
+         precision = .@y.values[[1]],
+         cutoff = .@alpha.values[[1]])
+}
+
+prec_rec_data <- map2_df(model_preds, model_names, get_prec_rec_df) %>% 
+  mutate(model = ordered(model, model_names),
+         precision = if_else(is.nan(precision), 1, precision))
+
+prec_rec_line_data <- filter(prec_rec_data, model %in% c("Logistic Regression", "Random Forest"))
+prec_rec_point_data <- anti_join(prec_rec_data, prec_rec_line_data, by = "model")
+
+prec_rec_line_data %>% 
+  ggplot(aes(recall, precision, color = model)) + 
+  geom_line() +
+  geom_point(data = prec_rec_point_data) +
+  labs(title = "Precision-Recall Space",
+       subtitle = "Any Serious Violations in 2016",
+       color = NULL, x = "Recall", y = "Precision")
 ```
 
