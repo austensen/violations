@@ -171,7 +171,7 @@ clean_rpad <- function(x, pos) {
             other_units = tot_unit - res_unit,
             assessed_value = fn_avt_a,
             year_built = pmax(yrb, yrb_rng, na.rm = TRUE),
-            year_reno = pmax(yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
+            year_reno = pmax(year_built, yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
             floors = story,
             buildings = bldgs,
             new_lot = newlot,

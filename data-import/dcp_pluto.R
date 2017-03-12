@@ -139,7 +139,7 @@ clean_pluto <- function(x, pos) {
               res_units = unitsres,
               other_units = unitstotal - unitsres,
               year_built = yearbuilt,
-              year_reno = pmax(yearalter1, yearalter2, na.rm = TRUE),
+              year_reno = pmax(year_built, yearalter1, yearalter2, na.rm = TRUE),
               buildings = numbldgs,
               floors = numfloors, 
               building_class = bldgclass, 
