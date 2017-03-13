@@ -255,10 +255,14 @@ Hash: e7d520c2a9597b303f54499e3bd90644
 Requires: gtools
 
 Package: ggplot2
-Source: CRAN
-Version: 2.2.1
-Hash: 46e5cb78836848aa44655e577433f54b
+Source: github
+Version: 2.2.1.9000
+Hash: 374b15806086d0d35769afe728732ccb
 Requires: digest, gtable, lazyeval, plyr, reshape2, scales, tibble
+GithubRepo: ggplot2
+GithubUsername: tidyverse
+GithubRef: master
+GithubSha1: fa8004e6bc2ac0c3fcfd1c6dd907f9c14e4451ce
 
 Package: git2r
 Source: CRAN
