@@ -1,8 +1,8 @@
 ---
-title: "R Notebook"
+title: "Violation Prediction Models"
 output:
-  github_document: default
   html_notebook: default
+  github_document: default
 ---
 
 ```{r setup, message=FALSE, warning=FALSE}
@@ -28,24 +28,22 @@ Create two data sets from training and testing models. The training data set (`d
 df <- feather::read_feather("../data/merged.feather") %>% na.omit()
 
 df_15 <- df %>% 
-  mutate(viol_c_all_2015 = viol_bldg_c_2015 + viol_apt_c_2015,
-         outcome = factor(viol_c_all_2015 > 0)) %>% 
-  select(-matches("2015|2016$"), -bbl, -tract10) %>% 
+  mutate(viol_bbl_ser_all_2015 = viol_bbl_bldg_ser_2015 + viol_bbl_apt_ser_2015,
+         outcome = factor(viol_bbl_ser_all_2015 > 0)) %>% 
+  select(-matches("2015|2016$"), -bbl, -block, -tract10) %>% 
   mutate(zoning = stringr::str_sub(zoning, 1, 1),
          building_class = stringr::str_sub(building_class, 1, 1)) %>%
-  mutate_if(is.character, as.factor) %>% 
-  na.omit
+  mutate_if(is.character, as.factor)
 
 names(df_15) <- names(df_15) %>% str_replace_all("2014", "1") %>% str_replace_all("2013", "2")
 
 df_16 <- df %>% 
-  mutate(viol_c_all_2016 = viol_bldg_c_2016 + viol_apt_c_2016,
-         outcome = factor(viol_c_all_2016 > 0)) %>% 
-  select(-matches("2013|2016$"), -bbl, -tract10) %>% 
+  mutate(viol_bbl_ser_all_2016 = viol_bbl_bldg_ser_2016 + viol_bbl_apt_ser_2016,
+         outcome = factor(viol_bbl_ser_all_2016 > 0)) %>% 
+  select(-matches("2013|2016$"), -bbl, -block, -tract10) %>% 
   mutate(zoning = stringr::str_sub(zoning, 1, 1),
          building_class = stringr::str_sub(building_class, 1, 1)) %>%
-  mutate_if(is.character, as.factor) %>% 
-  na.omit
+  mutate_if(is.character, as.factor)
 
 names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_all("2014", "2")
 ```
@@ -125,7 +123,7 @@ As expected, the various indicators of a building's violation record in the curr
 Finally, I use a Random Forest model with 10-fold Cross-validation.
 
 ```{r forest-fit, cache=TRUE}
-forest_fit_control <- trainControl(method = "repeatedcv", number = 10)
+forest_fit_control <- trainControl(method = "repeatedcv", number = 5)
 
 forest_fit <- train(outcome ~ ., data = df_15, 
                     method = "rf", 
@@ -137,7 +135,7 @@ forest_p <- predict(forest_fit, newdata = df_16)
 (forest_info <- confusionMatrix(forest_p, df_16[["outcome"]], positive = "TRUE", mode = "everything"))
 ```
 
-The Random Forest outperforms all the previous models in terms of accuracy with a value of `r forest_info$overall[["Accuracy"]]`. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of `r past_viol_info$overall[["Accuracy"]]` and `r forest_info$overall[["AccuracyNull"]]`, respectively. The Random Forest also has a Kappa statistic of `r forest_info$overall[["Kappa"]]`.
+The Random Forest outperforms all the previous models in terms of accuracy with a value of `r forest_info$overall[["Accuracy"]]`. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of `r past_viol_info$overall[["Accuracy"]]` and `r forest_info$overall[["AccuracyNull"]]`, respectively. The Random Forest also has a Kappa statistic of `r forest_info$overall[["Kappa"]]`, and its precision is `r forest_info$byClass[["Precision"]]`, and recall is `r forest_info$byClass[["Recall"]]`.
 
 ```{r}
 varImp(forest_fit)
@@ -147,14 +145,14 @@ Many of the variables that were important in the single decision tree are also i
 
 ---
 
-# ROC Space
+# Comparing Models
 
-In addition the the various statistics generated above, it is helpful to visualize the performance of the various models by plotting the models' true positive and false positive rates in a ROC space. Only the Logit model can be plotted as a ROC curve and have an AUC calculated, while the others are represented simply by points in the ROC space.
+Next I'll get the predictions of all the models, and store the names and predictions of the models.
 
-```{r model-preds}
+```{r}
 past_viol_pred <- prediction(as.numeric(df_15[["outcome"]]), df_16[["outcome"]])
 
-glm_pred <- prediction(glm_p, df_16[["outcome"]])
+glm_pred <- prediction(as.numeric(glm_p), df_16[["outcome"]])
 
 tree_pred <- tree_fit %>% 
   predict(newdata = df_16, type = "prob") %>% 
@@ -166,12 +164,29 @@ forest_pred <- forest_fit %>%
   .[[2]] %>%
   prediction(df_16[["outcome"]])
 
-
 model_preds <- list(past_viol_pred, glm_pred, tree_pred, forest_pred)
 
 model_names <- c("Past Violation", "Logistic Regression", "Decision Tree", "Random Forest")
 ```
 
+
+I'll also save predictions from the models into a data frame for additional analysis and mapping in later scripts.
+
+```{r}
+predictions <- tibble(bbl = df[["bbl"]],
+                      true_16 = df_16[["outcome"]] %>% as.logical %>% as.numeric, 
+                      past_viol = df_15[["outcome"]] %>% as.logical %>% as.numeric,
+                      logit = glm_pred@predictions %>% as_vector,
+                      tree = tree_pred@predictions %>% as_vector,
+                      forest = forest_pred@predictions %>% as_vector)
+
+feather::write_feather(predictions, "../data/model_predictions_16.feather")
+```
+
+
+## ROC Space
+
+In addition the the various statistics generated above, it is helpful to visualize the performance of the various models by plotting the models' true positive and false positive rates in a ROC space. Only the Logit model can be plotted as a ROC curve and have an AUC calculated, while the others are represented simply by points in the ROC space.
 
 ```{r roc-curve, cache=TRUE}
 get_roc_df <- function(.pred, model_name) {
@@ -207,6 +222,10 @@ roc_line_data %>%
        subtitle = "Any Serious Violations in 2016",
        color = NULL, x = "False Positive Rate", y = "True Positive Rate")
 ```
+
+## Precision-Recall Space
+
+Since the no-information accuracy for prediting violations is realatively high, at `r past_viol_info$overall[["AccuracyNull"]]`, and given that in different potential applications of these predictions we may be particualarily concerend about false positive vs false negatives, it is especially useful to look at the tradeoff between precision and recall for the models. I do this below by ploting the modelss precision-recall curves (or points).
 
 ```{r pr-curve, cache=TRUE}
 get_prec_rec_df <- function(.pred, model_name) {
