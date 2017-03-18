@@ -130,7 +130,7 @@ nycha_names <- c("HOUSING AUTHORITY", "NYCHA", "NEW YORK CITY HOUSING")
 clean_pluto <- function(x, pos) {
   x %>% 
     janitor::clean_names() %>% 
-    filter(easements == 0, unitsres >= 3, !ownername %in% nycha_names) %>% 
+    filter(easements == 0, !ownername %in% nycha_names) %>% 
     transmute(bbl = str_sub(bbl, 1, 10),
               cd = cd,
               county = recode(borocode, `1` = "061", `2` = "005", `3` = "047", `4` = "081", `5` = "085"),

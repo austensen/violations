@@ -164,9 +164,10 @@ rpad_cols <- cols(
 clean_rpad <- function(x, pos) {
   x %>% 
   janitor::clean_names() %>% 
-  filter(is.na(ease), res_unit >= 3) %>%
+  filter(is.na(ease)) %>%
   transmute(bbl = as.character(bble),
             cd = as.integer((boro * 100) + cp_dist),
+            tax_class = txcl,
             res_units = res_unit,
             other_units = tot_unit - res_unit,
             assessed_value = fn_avt_a,
