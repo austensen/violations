@@ -17,7 +17,9 @@ building_info_all <- full_join(rpad, pluto, by = "bbl", suffix = c("_rpad", "_pl
          other_units = pmax(other_units_pluto, other_units_rpad, na.rm = TRUE),
          avg_res_unit_sqft = res_sqft / res_units,
          year_built = pmax(year_built_pluto, year_built_rpad, na.rm = TRUE),
-         year_built = pmax(year_reno_pluto, year_reno_rpad, na.rm = TRUE)) %>% 
+         year_built = pmax(year_reno_pluto, year_reno_rpad, na.rm = TRUE),
+         zoning1 = str_sub(zoning, 1, 1),
+         building_class1 = str_sub(building_class, 1, 1)) %>%
   group_by(block) %>% 
   mutate(tract10 = max(tract10, na.rm = TRUE)) %>% 
   ungroup %>% 
@@ -27,27 +29,30 @@ building_info_all <- full_join(rpad, pluto, by = "bbl", suffix = c("_rpad", "_pl
 # Get counts of all res units by tract for maps
 tract_units <- building_info_all %>% 
   filter( # remove vacant land, single-family, coops, condos (this is imperfect, but better than nothing)
-    as.numeric(str_sub(tax_class, 1, 1)) < 3,
+    as.numeric(tax_class1) < 3,
     tax_class != "1B",
     res_units > 0,
-    !str_sub(building_class, 1, 1) %in% c("A","Z","G","V"),
+    !building_class1 %in% c("A","Z","G","V"),
     !building_class %in% c("C6","C8","D0","D4","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9")
   ) %>% 
+  # remove one unit that would most likely be owner's 
+  mutate(res_units = if_else(as.numeric(tax_class1) == 1, res_units - 1, res_units)) %>% 
   group_by(tract10) %>% 
   summarise(res_units = sum(res_units, na.rm = TRUE)) %>% 
   ungroup
 
 
-# restrict to only 3+ units for prediction modeling
+# Sample for prediction modeling
+# restrict to only 3+ units, and remove vacant land, single-family, coops, condos 
 building_info <- building_info_all %>% 
-  filter(res_units >= 3) %>% 
-  select(-tax_class) %>% 
-  mutate(zoning = str_sub(zoning, 1, 1),
-         building_class = str_sub(building_class, 1, 1))
+  filter(res_units >= 3,
+         !building_class1 %in% c("A","Z","G","V"),
+         !building_class %in% c("C6","C8","D0","D4","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9")) %>% 
+  select(-tax_class, -zoning, -building_class)
 
 
 # Create block-tract xwalk since blocks always nest in tracts, and there are fewer missing tracts by block
-block_tract10_xwalk <- building_info %>% 
+block_tract10_xwalk <- building_info_all %>% 
   filter(!is.na(tract10)) %>% 
   select(block, tract10) %>% 
   group_by(block) %>% 
