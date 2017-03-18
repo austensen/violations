@@ -90,3 +90,13 @@ all_viol_wide <- bbl_viol_wide %>%
 
 
 write_feather(all_viol_wide, "data/hpd_violations.feather")
+
+# Make tract-level wide counts of violatiosn for mapping
+tract_viol_map <- tract_viol %>% 
+  group_by(tract10, year, class) %>% 
+  summarise(violations = sum(violations, na.rm = TRUE)) %>% 
+  unite(class_year, class, year) %>% 
+  spread(class_year, violations) %>% 
+  ungroup
+
+write_feather(tract_viol_map, "data/hpd_violations_map_data.feather")
