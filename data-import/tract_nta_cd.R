@@ -1,7 +1,6 @@
 library(tidyverse)
 library(feather)
 library(stringr)
-library(here)
 library(sf)
 
 dir.create("data-raw", showWarnings = FALSE)
@@ -26,6 +25,7 @@ tract_xwalk <- tracts %>%
   select(-geometry)
   
 
+st_write(tracts, "data-raw/crosswalks/tract2010_sf.shp")
 write_feather(tract_xwalk, "data-raw/crosswalks/tract2010_nta_xwalk.feather")
 
 # st_write(tracts, "data-raw/crosswalks/census_tracts_2010.shp")
