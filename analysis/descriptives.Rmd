@@ -3,8 +3,8 @@ title: "Predicting Housing Code Violations"
 author: "Maxwell Austensen"
 date: '`r Sys.Date()`'
 output:
-  html_notebook: default
   github_document: default
+  html_notebook: default
 ---
 
 ```{r, message=FALSE, warning=FALSE}
@@ -13,8 +13,8 @@ library(tidyverse)
 
 ```{r}
 df <- feather::read_feather("../data/merged.feather") %>% 
-  mutate(viol_c_all_2016 = viol_bldg_c_2016 + viol_apt_c_2016,
-         viol_c_all_2015 = viol_bldg_c_2015 + viol_apt_c_2015)
+  mutate(viol_ser_all_2016 = viol_bbl_bldg_ser_2016 + viol_bbl_apt_ser_2016,
+         viol_ser_all_2015 = viol_bbl_bldg_ser_2015 + viol_bbl_apt_ser_2015)
 ```
 
 Small properties represent a very large share of all properties and contain a large share of all residential units.
@@ -52,7 +52,7 @@ df %>%
 df %>% 
   filter(res_units <= 200) %>% 
   group_by(res_units) %>%
-  summarise(any_serious_viol = mean(viol_c_all_2016 > 0)) %>% 
+  summarise(any_serious_viol = mean(viol_ser_all_2016 > 0)) %>% 
   filter(!is.na(res_units)) %>% 
   ggplot(aes(res_units, any_serious_viol)) + 
   geom_point() +
@@ -68,8 +68,8 @@ To get an overall score for each building we might want to adjust the violation 
 df %>% 
   filter(res_units <= 200) %>% 
   group_by(res_units) %>%
-  summarise(avg_viol_c_all_2016 = mean(viol_c_all_2016, na.rm = TRUE)) %>% 
-  ggplot(aes(res_units, avg_viol_c_all_2016)) + 
+  summarise(avg_viol_ser_all_2016 = mean(viol_ser_all_2016, na.rm = TRUE)) %>% 
+  ggplot(aes(res_units, avg_viol_ser_all_2016)) + 
   geom_point() +
   labs(title = "Average Number of Adjusted Serious Violations in 2016, by Property Size",
        subtitle = "Graph truncated at 200 residential units",
@@ -78,8 +78,8 @@ df %>%
 
 ```{r}
 df %>% 
-  filter(viol_c_all_2016 > 0) %>% 
-  ggplot(aes(viol_c_all_2016)) + 
+  filter(viol_ser_all_2016 > 0) %>% 
+  ggplot(aes(viol_ser_all_2016)) + 
   geom_density() +
   labs(title = "Density of Adjusted Number of Serious Violations in 2016",
        subtitle = "Among properties with at least one serious violation in 2016",
@@ -87,16 +87,16 @@ df %>%
 ```
 
 ```{r}
-sh_viol_16 <- mean(df$viol_c_all_2016)
+sh_viol_16 <- mean(df$viol_ser_all_2016)
 
 viol_16_avg <- df %>% 
-  filter(viol_c_all_2016 > 0) %>% 
-  summarise(mean(viol_c_all_2016)) %>%
+  filter(viol_ser_all_2016 > 0) %>% 
+  summarise(mean(viol_ser_all_2016)) %>%
   .[[1]]
  
 viol_16_no15 <- df %>% 
-  filter(viol_c_all_2016 > 0) %>% 
-  summarise(mean(viol_c_all_2015 > 0)) %>%
+  filter(viol_ser_all_2016 > 0) %>% 
+  summarise(mean(viol_ser_all_2015 > 0)) %>%
   .[[1]]
 ```
 
