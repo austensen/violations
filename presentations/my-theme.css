@@ -1,0 +1,11 @@
+.large { font-size: 130% }
+
+.small { font-size: 70% }
+
+th {
+  border-bottom:1pt solid black;
+}
+
+tr:nth-child(even) {
+    background-color: #DCDCDC;
+}
