@@ -22,14 +22,12 @@ Prep Data
 Create two data sets from training and testing models. The training data set (`df_15`) includes only violation data for 2013 and 2014 and an indicator for whether the property had any serious violations in 2015. The test data set (`df_16`) has violation data for 2014 and 2015 and an indicator for whether the property had any serious violations in 2016. The past years' violations indicators are renamed to be relative to the current year (eg. for 2015, 2014 becomes 1 and 2013 becomes 2). Later I plan to impute missing values, but for now I am simply dropping all records with missing data.
 
 ``` r
-df <- feather::read_feather("../data/merged.feather") %>% na.omit()
+df <- feather::read_feather("../data/merged.feather") %>% drop_na()
 
 df_15 <- df %>% 
   mutate(viol_bbl_ser_all_2015 = viol_bbl_bldg_ser_2015 + viol_bbl_apt_ser_2015,
          outcome = factor(viol_bbl_ser_all_2015 > 0)) %>% 
   select(-matches("2015|2016$"), -bbl, -block, -tract10) %>% 
-  mutate(zoning = stringr::str_sub(zoning, 1, 1),
-         building_class = stringr::str_sub(building_class, 1, 1)) %>%
   mutate_if(is.character, as.factor)
 
 names(df_15) <- names(df_15) %>% str_replace_all("2014", "1") %>% str_replace_all("2013", "2")
@@ -38,8 +36,6 @@ df_16 <- df %>%
   mutate(viol_bbl_ser_all_2016 = viol_bbl_bldg_ser_2016 + viol_bbl_apt_ser_2016,
          outcome = factor(viol_bbl_ser_all_2016 > 0)) %>% 
   select(-matches("2013|2016$"), -bbl, -block, -tract10) %>% 
-  mutate(zoning = stringr::str_sub(zoning, 1, 1),
-         building_class = stringr::str_sub(building_class, 1, 1)) %>%
   mutate_if(is.character, as.factor)
 
 names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_all("2014", "2")
@@ -60,34 +56,34 @@ First I'll just simply use the presence of serious violations in 2015 to predict
     ## Confusion Matrix and Statistics
     ## 
     ##           Reference
-    ## Prediction FALSE  TRUE
-    ##      FALSE 25241  2984
-    ##      TRUE   2842  3852
-    ##                                           
-    ##                Accuracy : 0.8332          
-    ##                  95% CI : (0.8292, 0.8371)
-    ##     No Information Rate : 0.8042          
-    ##     P-Value [Acc > NIR] : < 2e-16         
-    ##                                           
-    ##                   Kappa : 0.4659          
-    ##  Mcnemar's Test P-Value : 0.06471         
-    ##                                           
-    ##             Sensitivity : 0.5635          
-    ##             Specificity : 0.8988          
-    ##          Pos Pred Value : 0.5754          
-    ##          Neg Pred Value : 0.8943          
-    ##               Precision : 0.5754          
-    ##                  Recall : 0.5635          
-    ##                      F1 : 0.5694          
-    ##              Prevalence : 0.1958          
-    ##          Detection Rate : 0.1103          
-    ##    Detection Prevalence : 0.1917          
-    ##       Balanced Accuracy : 0.7311          
-    ##                                           
-    ##        'Positive' Class : TRUE            
+    ## Prediction  FALSE   TRUE
+    ##      FALSE 131327   7136
+    ##      TRUE    7071   7963
+    ##                                          
+    ##                Accuracy : 0.9074         
+    ##                  95% CI : (0.906, 0.9089)
+    ##     No Information Rate : 0.9016         
+    ##     P-Value [Acc > NIR] : 6.376e-15      
+    ##                                          
+    ##                   Kappa : 0.4772         
+    ##  Mcnemar's Test P-Value : 0.5913         
+    ##                                          
+    ##             Sensitivity : 0.52739        
+    ##             Specificity : 0.94891        
+    ##          Pos Pred Value : 0.52967        
+    ##          Neg Pred Value : 0.94846        
+    ##               Precision : 0.52967        
+    ##                  Recall : 0.52739        
+    ##                      F1 : 0.52852        
+    ##              Prevalence : 0.09837        
+    ##          Detection Rate : 0.05188        
+    ##    Detection Prevalence : 0.09794        
+    ##       Balanced Accuracy : 0.73815        
+    ##                                          
+    ##        'Positive' Class : TRUE           
     ## 
 
-Using the presence of serious violations in 2015 to predict violations for 2016 achieves an accuracy of 0.8331567, which is only a slight improvement over the no information rate of 0.8042327. This simple prediction has a Kappa statistic of 0.4659488, its precision is 0.5754407 and recall is 0.5634874.
+Using the presence of serious violations in 2015 to predict violations for 2016 achieves an accuracy of 0.9074444, which is only a slight improvement over the no information rate of 0.9016333. This simple prediction has a Kappa statistic of 0.4772093, its precision is 0.5296661 and recall is 0.5273859.
 
 ------------------------------------------------------------------------
 
@@ -120,34 +116,34 @@ print_results <- function(threshold, preditions) {
     ## Confusion Matrix and Statistics
     ## 
     ##           Reference
-    ## Prediction FALSE  TRUE
-    ##      FALSE 21295  1791
-    ##      TRUE   6788  5045
-    ##                                           
-    ##                Accuracy : 0.7543          
-    ##                  95% CI : (0.7498, 0.7588)
-    ##     No Information Rate : 0.8042          
-    ##     P-Value [Acc > NIR] : 1               
-    ##                                           
-    ##                   Kappa : 0.3888          
-    ##  Mcnemar's Test P-Value : <2e-16          
-    ##                                           
-    ##             Sensitivity : 0.7380          
-    ##             Specificity : 0.7583          
-    ##          Pos Pred Value : 0.4264          
-    ##          Neg Pred Value : 0.9224          
-    ##               Precision : 0.4264          
-    ##                  Recall : 0.7380          
-    ##                      F1 : 0.5405          
-    ##              Prevalence : 0.1958          
-    ##          Detection Rate : 0.1445          
-    ##    Detection Prevalence : 0.3389          
-    ##       Balanced Accuracy : 0.7481          
-    ##                                           
-    ##        'Positive' Class : TRUE            
+    ## Prediction  FALSE   TRUE
+    ##      FALSE 123525   5192
+    ##      TRUE   14873   9907
+    ##                                          
+    ##                Accuracy : 0.8693         
+    ##                  95% CI : (0.8676, 0.871)
+    ##     No Information Rate : 0.9016         
+    ##     P-Value [Acc > NIR] : 1              
+    ##                                          
+    ##                   Kappa : 0.4268         
+    ##  Mcnemar's Test P-Value : <2e-16         
+    ##                                          
+    ##             Sensitivity : 0.65614        
+    ##             Specificity : 0.89253        
+    ##          Pos Pred Value : 0.39980        
+    ##          Neg Pred Value : 0.95966        
+    ##               Precision : 0.39980        
+    ##                  Recall : 0.65614        
+    ##                      F1 : 0.49685        
+    ##              Prevalence : 0.09837        
+    ##          Detection Rate : 0.06454        
+    ##    Detection Prevalence : 0.16144        
+    ##       Balanced Accuracy : 0.77434        
+    ##                                          
+    ##        'Positive' Class : TRUE           
     ## 
 
-The Logit model achieves an accuracy of 0.7543171, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of 0.8042327. The Logit model achieves a Kappa statistic of 0.3887847, its precision is 0.42635, and recall is 0.7380047.
+The Logit model achieves an accuracy of 0.8692808, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of 0.9016333. The Logit model achieves a Kappa statistic of 0.4267789, its precision is 0.3997982, and recall is 0.6561362.
 
 ------------------------------------------------------------------------
 
@@ -157,7 +153,7 @@ Decision Tree
 Next I try a simple decision tree with 10 times 10-fold Cross-validation.
 
 ``` r
-tree_fit_control <- trainControl(method = "repeatedcv", number = 10, repeats = 10)
+tree_fit_control <- trainControl(method = "repeatedcv", number = 2) # repeats = 10
 
 tree_fit <- train(outcome ~ ., data = df_15, 
                   method = "rpart", 
@@ -171,34 +167,34 @@ tree_p <- predict(tree_fit, df_16)
     ## Confusion Matrix and Statistics
     ## 
     ##           Reference
-    ## Prediction FALSE  TRUE
-    ##      FALSE 25612  2973
-    ##      TRUE   2471  3863
+    ## Prediction  FALSE   TRUE
+    ##      FALSE 135414   8989
+    ##      TRUE    2984   6110
     ##                                           
-    ##                Accuracy : 0.8441          
-    ##                  95% CI : (0.8402, 0.8479)
-    ##     No Information Rate : 0.8042          
+    ##                Accuracy : 0.922           
+    ##                  95% CI : (0.9206, 0.9233)
+    ##     No Information Rate : 0.9016          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.4907          
-    ##  Mcnemar's Test P-Value : 1.12e-11        
+    ##                   Kappa : 0.4656          
+    ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.5651          
-    ##             Specificity : 0.9120          
-    ##          Pos Pred Value : 0.6099          
-    ##          Neg Pred Value : 0.8960          
-    ##               Precision : 0.6099          
-    ##                  Recall : 0.5651          
-    ##                      F1 : 0.5866          
-    ##              Prevalence : 0.1958          
-    ##          Detection Rate : 0.1106          
-    ##    Detection Prevalence : 0.1814          
-    ##       Balanced Accuracy : 0.7386          
+    ##             Sensitivity : 0.40466         
+    ##             Specificity : 0.97844         
+    ##          Pos Pred Value : 0.67187         
+    ##          Neg Pred Value : 0.93775         
+    ##               Precision : 0.67187         
+    ##                  Recall : 0.40466         
+    ##                      F1 : 0.50510         
+    ##              Prevalence : 0.09837         
+    ##          Detection Rate : 0.03981         
+    ##    Detection Prevalence : 0.05925         
+    ##       Balanced Accuracy : 0.69155         
     ##                                           
     ##        'Positive' Class : TRUE            
     ## 
 
-The decision tree's accuracy of 0.8440963, is a further improvement over the accuracy Logit model, the previous year's violation prediction, and no information rate. The decision tree model also achieves an improved Kappa statistic of 0.4907399, and its precision is 0.6098832, and recall is 0.5650965.
+The decision tree's accuracy of 0.9219985, is a further improvement over the accuracy Logit model, the previous year's violation prediction, and no information rate. The decision tree model also achieves an improved Kappa statistic of 0.4655843, and its precision is 0.6718716, and recall is 0.4046626.
 
 ``` r
 varImp(tree_fit)
@@ -206,29 +202,29 @@ varImp(tree_fit)
 
     ## rpart variable importance
     ## 
-    ##   only 20 most important variables shown (out of 72)
+    ##   only 20 most important variables shown (out of 65)
     ## 
-    ##                     Overall
-    ## viol_bbl_apt_oth_1  100.000
-    ## viol_bbl_apt_ser_1   92.494
-    ## viol_bbl_apt_oth_2   79.166
-    ## res_sqft             56.990
-    ## viol_bbl_bldg_oth_1  46.629
-    ## res_units             9.443
-    ## viol_bbl_apt_ser_2    7.331
-    ## assessed_value        3.080
-    ## lot_area              2.686
-    ## building_classZ       0.000
-    ## cd                    0.000
-    ## zoningP               0.000
-    ## viol_blk_apt_ser_2    0.000
-    ## new_lot               0.000
-    ## building_classJ       0.000
-    ## building_classR       0.000
-    ## building_classD       0.000
-    ## viol_bbl_bldg_ser_1   0.000
-    ## building_classH       0.000
-    ## basement_code         0.000
+    ##                      Overall
+    ## viol_bbl_apt_oth_1   100.000
+    ## viol_bbl_apt_ser_1    81.348
+    ## viol_bbl_apt_oth_2    78.604
+    ## res_sqft              71.941
+    ## res_units             68.446
+    ## viol_bbl_apt_ser_2     6.113
+    ## lot_area               6.112
+    ## viol_blk_bldg_ser_2    0.000
+    ## building_class1N       0.000
+    ## assessed_value         0.000
+    ## building_class1S       0.000
+    ## building_class1E       0.000
+    ## building_class1K       0.000
+    ## viol_blk_apt_ser_1     0.000
+    ## viol_trct_bldg_oth_1   0.000
+    ## zoning1M               0.000
+    ## building_class1W       0.000
+    ## building_class1M       0.000
+    ## viol_trct_bldg_ser_2   0.000
+    ## viol_bbl_bldg_ser_2    0.000
 
 As expected, the various indicators of a building's violation record in the current and previous year are the most important attributes for predicting the presence of serious violations in the subsequent year. Additionally, the building's total residential square footage and total lot area, as well as the number of residential units and the total assessed value in the current year are also important.
 
@@ -240,7 +236,7 @@ Random Forest
 Finally, I use a Random Forest model with 10-fold Cross-validation.
 
 ``` r
-forest_fit_control <- trainControl(method = "repeatedcv", number = 5)
+forest_fit_control <- trainControl(method = "repeatedcv", number = 2)
 
 forest_fit <- train(outcome ~ ., data = df_15, 
                     method = "rf", 
@@ -255,34 +251,34 @@ forest_p <- predict(forest_fit, newdata = df_16)
     ## Confusion Matrix and Statistics
     ## 
     ##           Reference
-    ## Prediction FALSE  TRUE
-    ##      FALSE 25650  2766
-    ##      TRUE   2433  4070
+    ## Prediction  FALSE   TRUE
+    ##      FALSE 133129   6838
+    ##      TRUE    5269   8261
     ##                                           
-    ##                Accuracy : 0.8511          
-    ##                  95% CI : (0.8473, 0.8548)
-    ##     No Information Rate : 0.8042          
+    ##                Accuracy : 0.9211          
+    ##                  95% CI : (0.9198, 0.9225)
+    ##     No Information Rate : 0.9016          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.5183          
-    ##  Mcnemar's Test P-Value : 4.135e-06       
+    ##                   Kappa : 0.5338          
+    ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.5954          
-    ##             Specificity : 0.9134          
-    ##          Pos Pred Value : 0.6259          
-    ##          Neg Pred Value : 0.9027          
-    ##               Precision : 0.6259          
-    ##                  Recall : 0.5954          
-    ##                      F1 : 0.6102          
-    ##              Prevalence : 0.1958          
-    ##          Detection Rate : 0.1166          
-    ##    Detection Prevalence : 0.1862          
-    ##       Balanced Accuracy : 0.7544          
+    ##             Sensitivity : 0.54712         
+    ##             Specificity : 0.96193         
+    ##          Pos Pred Value : 0.61057         
+    ##          Neg Pred Value : 0.95115         
+    ##               Precision : 0.61057         
+    ##                  Recall : 0.54712         
+    ##                      F1 : 0.57711         
+    ##              Prevalence : 0.09837         
+    ##          Detection Rate : 0.05382         
+    ##    Detection Prevalence : 0.08815         
+    ##       Balanced Accuracy : 0.75453         
     ##                                           
     ##        'Positive' Class : TRUE            
     ## 
 
-The Random Forest outperforms all the previous models in terms of accuracy with a value of 0.8511126. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of 0.8331567 and 0.8042327, respectively. The Random Forest also has a Kappa statistic of 0.5182922, and its precision is 0.625865, and recall is 0.5953774.
+The Random Forest outperforms all the previous models in terms of accuracy with a value of 0.9211255. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of 0.9074444 and 0.9016333, respectively. The Random Forest also has a Kappa statistic of 0.5337579, and its precision is 0.6105691, and recall is 0.5471223.
 
 ``` r
 varImp(forest_fit)
@@ -290,29 +286,29 @@ varImp(forest_fit)
 
     ## rf variable importance
     ## 
-    ##   only 20 most important variables shown (out of 72)
+    ##   only 20 most important variables shown (out of 65)
     ## 
     ##                      Overall
     ## viol_bbl_apt_oth_1    100.00
-    ## viol_bbl_apt_ser_1     73.62
-    ## res_sqft               61.86
-    ## viol_bbl_apt_oth_2     61.62
-    ## res_units              49.90
-    ## assessed_value         48.38
-    ## lot_area               46.86
-    ## viol_trct_bldg_oth_1   42.08
-    ## viol_trct_bldg_ser_1   40.59
-    ## viol_blk_bldg_oth_1    37.46
-    ## viol_blk_apt_ser_1     36.14
-    ## viol_trct_bldg_oth_2   35.89
-    ## viol_blk_apt_oth_1     35.84
-    ## viol_trct_apt_oth_2    35.83
-    ## viol_trct_apt_oth_1    34.87
-    ## viol_trct_apt_ser_1    33.85
-    ## viol_bbl_bldg_oth_1    32.43
-    ## viol_bbl_bldg_ser_1    32.31
-    ## viol_blk_apt_oth_2     31.68
-    ## viol_trct_apt_ser_2    30.42
+    ## res_sqft               90.49
+    ## res_units              72.72
+    ## viol_bbl_apt_ser_1     70.93
+    ## assessed_value         59.19
+    ## viol_bbl_apt_oth_2     56.47
+    ## lot_area               53.92
+    ## viol_trct_bldg_ser_1   44.63
+    ## viol_blk_apt_oth_1     44.10
+    ## viol_trct_bldg_oth_1   43.43
+    ## floors                 42.78
+    ## viol_blk_apt_ser_1     39.54
+    ## viol_trct_bldg_oth_2   37.75
+    ## viol_trct_apt_ser_1    36.42
+    ## viol_bbl_bldg_oth_1    36.24
+    ## viol_blk_bldg_ser_1    34.97
+    ## viol_trct_apt_oth_2    34.79
+    ## viol_blk_bldg_oth_1    34.42
+    ## viol_trct_apt_oth_1    34.35
+    ## viol_bbl_bldg_ser_1    33.91
 
 Many of the variables that were important in the single decision tree are also important in the Random Forest model. Others that were important include the number of floors in the building, the Community District in which it is located, and the year it was built.
 
@@ -320,6 +316,50 @@ Many of the variables that were important in the single decision tree are also i
 
 Comparing Models
 ================
+
+First I'll present all the model performance statistics together in a simple table.
+
+``` r
+combine_stats <- function(.info) {
+  c(.info[["overall"]], .info[["byClass"]])
+}
+
+model_names <- c("Past Violation", "Logistic Regression", "Decision Tree", "Random Forest")
+stat_names <- tree_info %>% combine_stats() %>% names()
+
+model_stat_table <- list(past_viol_info, glm_info, tree_info, forest_info) %>% 
+  map(combine_stats) %>% 
+  set_names(model_names) %>% 
+  as_tibble %>% 
+  mutate_all(funs(round(., digits = 3))) %>% 
+  mutate(Statistic = stat_names) %>% 
+  select(Statistic, everything())
+
+feather::write_feather(model_stat_table, "../data/model_stat_table.feather")
+
+knitr::kable(model_stat_table)
+```
+
+| Statistic            |  Past Violation|  Logistic Regression|  Decision Tree|  Random Forest|
+|:---------------------|---------------:|--------------------:|--------------:|--------------:|
+| Accuracy             |           0.907|                0.869|          0.922|          0.921|
+| Kappa                |           0.477|                0.427|          0.466|          0.534|
+| AccuracyLower        |           0.906|                0.868|          0.921|          0.920|
+| AccuracyUpper        |           0.909|                0.871|          0.923|          0.922|
+| AccuracyNull         |           0.902|                0.902|          0.902|          0.902|
+| AccuracyPValue       |           0.000|                1.000|          0.000|          0.000|
+| McnemarPValue        |           0.591|                0.000|          0.000|          0.000|
+| Sensitivity          |           0.527|                0.656|          0.405|          0.547|
+| Specificity          |           0.949|                0.893|          0.978|          0.962|
+| Pos Pred Value       |           0.530|                0.400|          0.672|          0.611|
+| Neg Pred Value       |           0.948|                0.960|          0.938|          0.951|
+| Precision            |           0.530|                0.400|          0.672|          0.611|
+| Recall               |           0.527|                0.656|          0.405|          0.547|
+| F1                   |           0.529|                0.497|          0.505|          0.577|
+| Prevalence           |           0.098|                0.098|          0.098|          0.098|
+| Detection Rate       |           0.052|                0.065|          0.040|          0.054|
+| Detection Prevalence |           0.098|                0.161|          0.059|          0.088|
+| Balanced Accuracy    |           0.738|                0.774|          0.692|          0.755|
 
 Next I'll get the predictions of all the models, and store the names and predictions of the models.
 
@@ -401,7 +441,7 @@ roc_line_data %>%
 Precision-Recall Space
 ----------------------
 
-Since the no-information accuracy for prediting violations is realatively high, at 0.8042327, and given that in different potential applications of these predictions we may be particualarily concerend about false positive vs false negatives, it is especially useful to look at the tradeoff between precision and recall for the models. I do this below by ploting the modelss precision-recall curves (or points).
+Since the no-information accuracy for prediting violations is realatively high, at 0.9016333, and given that in different potential applications of these predictions we may be particualarily concerend about false positive vs false negatives, it is especially useful to look at the tradeoff between precision and recall for the models. I do this below by ploting the modelss precision-recall curves (or points).
 
 ``` r
 get_prec_rec_df <- function(.pred, model_name) {
