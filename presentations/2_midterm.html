@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prediciting Housing Code Violations</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Maxwell Austensen" />
+    <meta name="date" content="2017-03-20" />
+    <link href="libs/remark-css/example.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Prediciting Housing Code Violations
+## EDSP - Mideterm Presentation
+### Maxwell Austensen
+### 2017-03-20
+
+---
+
+
+
+
+
+
+class: inverse, center, middle
+
+# Recap
+
+---
+## Topic Motivation
+
+Legal Aid and other organizations have resources to proactively seek out cases
+
+Identifying buildings likely to benefit from such organizations helps the organizations to efficiently target outreach
+
+Serious housing code violations and can serve as proxy for overall harmfull conditions for tenants
+
+## Project Goal
+
+Use variety of available data sources to predict future presence of serious housing code violations
+
+This prject would be a success if I can predict the liklihood of a buildings to have serious violations significantly better than naive methods 
+
+---
+class: inverse, center, middle
+
+# Data
+
+---
+## Data Sources
+
+Variety of (mostly) public data sets, largely from NYC Open Data
+  * Phycial characteristics of buildings
+  * History of violations and litigation
+
+## Munging
+
+* Download raw data and documentation files
+
+* Select and clean variables
+
+* Restrict to privately-owned rental units
+
+* Adjust apartment-level violations by number of units
+
+* Add block- and tract-level violation aggregates
+
+* Reshape to building-level data set
+
+---
+class: inverse, center, middle
+
+# Descriptives
+
+
+
+---
+class: center, middle
+
+&lt;img src="2_midterm_files/figure-html/viol-by-size-1.png" width="100%" /&gt;
+
+---
+
+background-image: url(../maps/tract_violations_rate_2016.png) 
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# Models
+
+---
+
+## Model Performance Statistics
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Past Violation &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Logistic Regression &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Decision Tree &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Random Forest &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Accuracy &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.907 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.869 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.922 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.921 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AccuracyPValue &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Balanced Accuracy &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.738 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.774 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.692 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.755 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AccuracyNull &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.902 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.902 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.902 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.902 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Kappa &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.477 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.427 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.466 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.534 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; McnemarPValue &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.591 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.497 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.505 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.577 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Sensitivity &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.527 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.656 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.405 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.547 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Specificity &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.949 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.893 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.978 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.962 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Precision &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.530 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.400 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.672 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.611 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Recall &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.527 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.656 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.405 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.547 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+## Variable Importance
+### Decision Tree &amp; Random Forest
+
+* Serious and non-serious violations at building in previous two year
+
+* Residential Square Footage
+
+* Residential Units
+
+* Total Lot Area
+
+* Assessed Value
+
+* Rate of Serious and non-serious violations in Block and Tract
+
+
+
+---
+
+background-image: url(../analysis/models_files/figure-markdown_github/roc-curve-1.png)
+background-size: contain
+
+---
+
+background-image: url(../analysis/models_files/figure-markdown_github/pr-curve-1.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# Next Steps
+
+---
+## Data Prep
+
+Impute missing values in building characteristic variables (year built, etc.)
+
+Add more data sets:
+  * Violation complaints
+  * Emergency repairs
+  * Corporate owner
+  * Building permits
+  * Certificates of occupancy
+  * Property sales
+  * Building violations
+  * Boiler information
+  * Rodent inspections
+  * Subsidized housing
+  * Rent-regulated units
+  * Property tax delinquencies
+  * American Community Survey
+  * Housing Vacancy Survey 
+  
+---
+## Additional analysis
+
+Try additional models 
+
+Analyze variable importance further
+
+Write up results of model evaluation
+
+Experiment with presentation of prediction results
+
+---
+&lt;img src="../maps/cd_maps/MottHaven_actual.png" width="100%" /&gt;
+---
+&lt;img src="../maps/cd_maps/MottHaven_past_viol.png" width="100%" /&gt;
+---
+&lt;img src="../maps/cd_maps/MottHaven_logit.png" width="100%" /&gt;
+---
+&lt;img src="../maps/cd_maps/MottHaven_tree.png" width="100%" /&gt;
+---
+&lt;img src="../maps/cd_maps/MottHaven_forest.png" width="100%" /&gt;
+---
+class: inverse, center, middle
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('showSlide', function (slide) {setTimeout(function() {window.dispatchEvent(new Event('resize'));}, 100)});</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
