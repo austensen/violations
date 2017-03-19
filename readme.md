@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-03-06
+2017-03-19
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -33,30 +33,34 @@ Repository Organization
 <td>R Notebook files for main analysis</td>
 </tr>
 <tr class="even">
-<td><code>./data-import</code></td>
-<td>All scripts to download raw data and documentation files, clean data, and prep for joining all sources</td>
+<td><code>./maps</code></td>
+<td>R scripts to create maps and final map images</td>
 </tr>
 <tr class="odd">
+<td><code>./munge</code></td>
+<td>R scripts to download raw files, clean data, and prep for joining all sources</td>
+</tr>
+<tr class="even">
 <td><code>./data-raw</code></td>
-<td>All raw data files downloaded, and cleaned individual data sets <em>(git-ignored due to file size)</em></td>
+<td>Raw data files, and cleaned individual data sets, including crosswalks <em>(git-ignored due to file size)</em></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./data-documentation</code></td>
-<td>All documentation files downloaded for data sources</td>
-</tr>
-<tr class="odd">
-<td><code>./data</code></td>
-<td>Final sample data set(s) after joining all sources <em>(only samples of data are not git-ignored)</em></td>
+<td>Documentation files downloaded for data sources</td>
 </tr>
 <tr class="even">
-<td><code>./functions</code></td>
-<td>All R functions used thoughout project</td>
+<td><code>./data</code></td>
+<td>Final cleaned and joined data sets <em>(only samples of data are not git-ignored)</em></td>
 </tr>
 <tr class="odd">
+<td><code>./functions</code></td>
+<td>R functions used thoughout project</td>
+</tr>
+<tr class="even">
 <td><code>./presentations</code></td>
 <td>Slide presentations for class using <a href="https://github.com/yihui/xaringan"><code>xaringan</code></a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./packrat</code></td>
 <td>Files for <a href="https://rstudio.github.io/packrat/"><code>packrat</code></a> R package management system <em>(do not edit)</em></td>
 </tr>
@@ -71,11 +75,13 @@ To-Do
 -   Run basic descriptives on final sample data
     -   Overall prevelence of (serious) housing code violations
     -   ...
--   Add step to `merge_all.R` that creates larger geography level indicators
-    -   eg. buildings with violations in the block/tract/NTA etc.
 -   Deal with missing data problems
-    -   Could simplify features where applicable (eg. first character of `zoning`, `building_class`, etc.)
     -   Impute missing data
+    -   simple mean imputation,
+    -   mean by zipcode and/or builing type,
+    -   should also see if missing-not-at-random
+    -   look for values in past years of data (older pluto/rpad versions),
+    -   regressions using other variables
 -   Add to evaluation of models using tests reccomended in Dietterich (1997) reading
 
 ### Data source wish-list
@@ -87,3 +93,7 @@ To-Do
 -   [Likely Rent-Regulated Units](http://taxbills.nyc/)
 -   Certificates of Occupancy (DCP - FOIL)
 -   Open Balance File (Poperty Tax Delinquency) (DOF - FOIL)
+-   HPD registration files - coporate owner
+-   DOF sales data - price and date of last sale
+-   Tract-level ACS - median rent, poverty rate, etc.
+-   SBA-level HVS - building quality, pests, etc.
