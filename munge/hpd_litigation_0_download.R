@@ -13,7 +13,10 @@ download.file("http://www1.nyc.gov/assets/hpd/downloads/pdf/LitigationOpenDataDo
 
 unzip("data-documentation/LitigationOpenDataDoc.zip", exdir = "data-documentation")
 
+# Delete xsd and zip files
+dir("data-documentation", pattern = "\\.(xsd|zip)$", full.names = TRUE) %>% file.remove()
+
 # Download Data -----------------------------------------------------------
 
 download.file("https://data.cityofnewyork.us/api/views/59kj-x8nc/rows.csv?accessType=DOWNLOAD",
-              str_interp("data-raw/hpd_litigation/hpd_litigation.csv"), method = "curl", quiet = TRUE)
+              "data-raw/hpd_litigation/hpd_litigation.csv", method = "curl", quiet = TRUE)
