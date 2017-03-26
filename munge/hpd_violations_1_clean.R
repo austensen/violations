@@ -43,8 +43,9 @@ viol_raw <- read_csv("data-raw/hpd_violations/hpd_violations.csv", col_types = v
 
 bbl_tract10_units <- read_feather("data/bbl_tract10_units.feather")
 
-# bbl viols = bldg + (apt / bbl_units)
-# tract viols = ((bldg * bbl_units) + apt ) / tract_units
+# Violation adjustments:
+  # bbl viols = bldg + (apt / bbl_units)
+  # tract viols = ((bldg * bbl_units) + apt ) / tract_units
 
 bbl_viol <- viol_raw %>% 
   filter(lubridate::year(InspectionDate) %in% 2013:2016) %>% 
@@ -52,7 +53,6 @@ bbl_viol <- viol_raw %>%
          year = lubridate::year(InspectionDate),
          space = if_else(is.na(Apartment), "bldg", "apt"),
          class = if_else(Class == "C", "ser", "oth")) %>% 
-  semi_join(bbl_tract10_units, by = "bbl") %>% 
   group_by(bbl, year, class, space) %>% 
   summarise(violations = n())
 
