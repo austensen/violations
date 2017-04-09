@@ -7,14 +7,15 @@ viol <- read_feather("data/hpd_violations_map_data.feather")
 
 tracts <- st_read("data-raw/crosswalks/tract2010_sf.shp", stringsAsFactors = FALSE)
 
-tract_units <- read_feather("data/tract10_res_units.feather")
+tract_units <- read_feather("data/bbl_tract10_units.feather") %>% 
+  distinct(tract10, tract_res_units)
 
 map_data <- tracts %>% 
   left_join(viol, by = c("geoid" = "tract10")) %>% 
   left_join(tract_units, by = c("geoid" = "tract10")) %>% 
-  mutate(ser_2016 = if_else(is.na(ser_2016), 0L, ser_2016),
-         ser_viol_rt_2016 = (ser_2016 / res_units) * 1000,
-         ser_viol_rt_2016 = if_else(res_units < 100, NA_real_, ser_viol_rt_2016)) 
+  mutate(ser_2016 = if_else(is.na(viol_trct_2016), 0, viol_trct_2016),
+         ser_viol_rt_2016 = (viol_trct_2016 / tract_res_units) * 1000,
+         ser_viol_rt_2016 = if_else(tract_res_units < 100, NA_real_, ser_viol_rt_2016)) 
   
 
 ggplot(map_data, aes(fill = ser_viol_rt_2016)) + 
