@@ -17,6 +17,7 @@ df <- building_info %>%
   group_by(tract10) %>% 
   mutate_at(vars(matches("^viol_trct_apt")), funs(. / sum(res_units, na.rm = TRUE))) %>% 
   mutate_at(vars(matches("^viol_trct_bldg")), funs(. / n())) %>%
+  mutate_if(is.character, as.factor) %>% 
   ungroup
   
 write_feather(df, "data/merged.feather")
