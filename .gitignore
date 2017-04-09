@@ -28,6 +28,7 @@ vignettes/*.pdf
 # Packrat library sources
 packrat/lib*/
 packrat/src/
+!packrat/src/packrat/
 # Mac files
 .DS_Store
 # data folders
@@ -37,3 +38,5 @@ data-raw/
 *.nb.html
 # cache results
 analysis/models_cache/
+# test of USPS address clearer with API key
+usps_text.R
