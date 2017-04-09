@@ -27,8 +27,8 @@ vignettes/*.pdf
 .Rproj.user
 # Packrat library sources
 packrat/lib*/
-packrat/src/
-!/packrat/src/packrat/*.tar.gz
+packrat/src/*
+!/packrat/src/packrat/
 # Mac files
 .DS_Store
 # data folders
