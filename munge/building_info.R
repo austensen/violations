@@ -33,7 +33,8 @@ building_info_filtered <- full_join(rpad, pluto, by = "bbl", suffix = c("_rpad",
     !building_class1 %in% c("A","Z","G","V"),
     !building_class %in% c("C6","C8","D0","D4","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9")
   )
-  # warnings are just cases where tract10 is missing for all bbls in block, that's okay
+
+message("warnings are just cases where tract10 is missing for all bbls in block, that's okay")
 
 bbl_tract10_units <- building_info_filtered %>% 
   select(bbl, tract10, res_units) %>% 
