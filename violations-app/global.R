@@ -20,9 +20,9 @@ cds <- c(
 )
 
 models <- c(
-  "true_16" = "Actual Violations",
-  "past_viol" = "Previous Year Violations",
-  "logit" = "Logit Predictions",
-  "tree" = "Decision Tree Predictions",
-  "forest" = "Random Forest Predictions"
+  "Actual Violations" = "true_16",
+  "Previous Year Violations" = "past_viol",
+  "Logit Predictions" = "logit",
+  "Decision Tree Predictions" = "tree",
+  "Random Forest Predictions" = "forest"
 )

@@ -12,7 +12,7 @@ function(input, output, session) {
   output$map <- renderLeaflet({
     map_df %>% 
       filter(cd %in% cds[[input$cd]]) %>%
-      rename_(.dots = setNames(input$model, "pred")) %>% 
+      rename_(.dots = setNames(models[[input$model]], "pred")) %>% 
       leaflet() %>%
       addProviderTiles(providers$CartoDB.Positron) %>% 
       addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
@@ -23,5 +23,14 @@ function(input, output, session) {
                                                       bringToFront = TRUE)) %>%
       addLegend(pal = pal, values = ~pred, opacity = 1, title = NULL,
                 position = "bottomright")
+  })
+  
+  output$tbl <- DT::renderDataTable({
+    map_df %>% 
+      tibble::as_tibble() %>% 
+      filter(cd %in% cds[[input$cd]]) %>%
+      rename_(.dots = setNames(models[[input$model]], "pred")) %>% 
+      select(bbl, pred) %>% 
+      arrange(desc(pred))
   })
 }
