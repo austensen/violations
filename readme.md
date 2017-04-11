@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-04-09
+2017-04-11
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -38,34 +38,38 @@ Repository Organization
 <td>R Notebook files for main analysis</td>
 </tr>
 <tr class="odd">
+<td><code>./violations-app</code></td>
+<td><a href="https://shiny.rstudio.com/"><code>shiny</code></a> files for <a href="https://maxwell-austensen.shinyapps.io/violations_app/">app to visualize model predictions</a></td>
+</tr>
+<tr class="even">
 <td><code>./maps</code></td>
 <td>R scripts to create maps and final map images</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./munge</code></td>
 <td>R scripts to download raw files, clean data, and prep for joining all sources</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>./data-raw</code></td>
 <td>Raw data files, and cleaned individual data sets, including crosswalks <em>(git-ignored due to file size)</em></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./data-documentation</code></td>
 <td>Documentation files downloaded for data sources</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>./data</code></td>
 <td>Final cleaned and joined data sets <em>(only samples of data are not git-ignored)</em></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./functions</code></td>
 <td>R functions used throughout project</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>./presentations</code></td>
 <td>Slide presentations for class using <a href="https://github.com/yihui/xaringan"><code>xaringan</code></a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>./packrat</code></td>
 <td>Files for <a href="https://rstudio.github.io/packrat/"><code>packrat</code></a> R package management system <em>(do not edit)</em></td>
 </tr>
