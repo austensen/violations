@@ -1,2 +1,2 @@
-rsconnect::deployApp("violations_app")
-shiny::runApp("violations_app")
+rsconnect::deployApp("violations-app")
+shiny::runApp("violations-app")
