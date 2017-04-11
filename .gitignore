@@ -40,3 +40,4 @@ data-raw/
 analysis/models_cache/
 # test of USPS address clearer with API key
 usps_test.R
+packrat/src/
