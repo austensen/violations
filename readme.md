@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-04-11
+2017-04-12
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -39,7 +39,7 @@ Repository Organization
 </tr>
 <tr class="odd">
 <td><code>./violations-app</code></td>
-<td><a href="https://shiny.rstudio.com/"><code>shiny</code></a> files for <a href="https://maxwell-austensen.shinyapps.io/violations_app/">app to visualize model predictions</a></td>
+<td><a href="https://shiny.rstudio.com/"><code>shiny</code></a> files for <a href="https://maxwell-austensen.shinyapps.io/violations-app/">app to visualize model predictions</a></td>
 </tr>
 <tr class="even">
 <td><code>./maps</code></td>

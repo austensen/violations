@@ -22,7 +22,7 @@ Directory              | Description
 -----------------------|------------------------------------------------------------------------------------------------
 `./`                   | Pseudo makefiles for data and analysis/maps
 `./analysis`           | R Notebook files for main analysis
-`./violations-app`     | [`shiny`](https://shiny.rstudio.com/) files for [app to visualize model predictions](https://maxwell-austensen.shinyapps.io/violations_app/)
+`./violations-app`     | [`shiny`](https://shiny.rstudio.com/) files for [app to visualize model predictions](https://maxwell-austensen.shinyapps.io/violations-app/)
 `./maps`               | R scripts to create maps and final map images
 `./munge`              | R scripts to download raw files, clean data, and prep for joining all sources
 `./data-raw`           | Raw data files, and cleaned individual data sets, including crosswalks _(git-ignored due to file size)_
