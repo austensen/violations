@@ -9,9 +9,13 @@ map_df <- readRDS("map_df.rds")
 pal <- colorNumeric(viridis::viridis_pal()(2), domain = 0:1)
 
 function(input, output, session) {
+  
+  cd_df <- reactive({
+    filter(map_df, cd %in% cds[[input$cd]])
+  })
+  
   output$map <- renderLeaflet({
-    map_df %>% 
-      filter(cd %in% cds[[input$cd]]) %>%
+    cd_df() %>% 
       rename_(.dots = setNames(models[[input$model]], "pred")) %>% 
       leaflet() %>%
       addProviderTiles(providers$CartoDB.Positron) %>% 
@@ -26,9 +30,8 @@ function(input, output, session) {
   })
   
   output$tbl <- DT::renderDataTable({
-    map_df %>% 
+    cd_df() %>% 
       tibble::as_tibble() %>% 
-      filter(cd %in% cds[[input$cd]]) %>%
       rename_(.dots = setNames(models[[input$model]], "pred")) %>% 
       select(bbl, pred) %>% 
       arrange(desc(pred))
