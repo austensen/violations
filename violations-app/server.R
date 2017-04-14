@@ -6,7 +6,7 @@ library(sf)
 
 map_df <- readRDS("map_df.rds")
 
-pal <- colorNumeric(viridis::viridis_pal()(2), domain = 0:1)
+pal <- colorNumeric("viridis", domain = 0:1)
 
 function(input, output, session) {
   
