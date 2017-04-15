@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-04-12
+2017-04-15
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -80,7 +80,7 @@ Reproducability Instructions
 ----------------------------
 
 1.  Clone repo and open the RStudio project file `edsp17proj-austensen.Rproj`
-    -   The package `packrat` will be automatically installed from source files in the repository. Then all the other packages used in this project will be installed from instructions saved in this repo. All installed packageswill be saved in the packrat sub-directories of this repo. This allows you to easily get all the packages you need to reproduce this project while not disrupting your own local package library (eg. change versions).
+    -   The package `packrat` will be automatically installed from source files in the repository. Then all the other packages used in this project will be installed from instructions saved in this repo. All installed packages will be saved in the packrat sub-directories of this repo. This allows you to easily get all the packages you need to reproduce this project while not disrupting your own local package library (eg. change versions).
 
 2.  Run `source("make_data.R")` to download and prepare all the data necessary to reproduce all the analysis.
 3.  Run `source("make_analysis_maps.R")` to run all the analysis scripts, rendering .nb.html files and generating map images.
@@ -88,11 +88,12 @@ Reproducability Instructions
 To-Do
 -----
 
--   Switch over from HPD website to NYC open data (charges, and complaints)
+-   Improve logit model using `MASS::stepAIC()` to choose a model
 
--   Run basic descriptive on final sample data
-    -   Overall prevalence of (serious) housing code violations
-    -   ...
+-   Plot decision tree (look at `rpart.plot` package)
+
+-   Consider changing from classification to regression using adjusted serious violations count
+
 -   Deal with missing data problems
     -   Impute missing data
     -   simple mean imputation,
