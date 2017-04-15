@@ -62,14 +62,11 @@ function(input, output, session) {
     
     bbl_df <- filter(cd_df(), bbl == as.character(bbl_selected))
 
-    bbl_bbox <- st_bbox(bbl_df)
-
-    bbl_lng <- mean(bbl_bbox[c("xmin", "xmax")])
-    bbl_lat <- mean(bbl_bbox[c("ymin", "ymax")])
+    bbl_center <- suppressWarnings(st_centroid(bbl_df))[["geometry"]][[1]]
 
     leafletProxy("map") %>% 
       clearPopups() %>%
-      addPopups(lng = bbl_lng, lat = bbl_lat, 
+      addPopups(lng = bbl_center[1], lat = bbl_center[2], 
                 popup = paste("BBL:", bbl_df$bbl, "<br>",
                               "Actual Violations:", bbl_df$true_16, "<br>",
                               "Previous Year Violations:", bbl_df$past_viol, "<br>",
