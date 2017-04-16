@@ -25,6 +25,14 @@ set.seed(2017)
 Create two data sets from training and testing models. The training data set (`df_15`) includes only violation data for 2013 and 2014 and an indicator for whether the property had any serious violations in 2015. The test data set (`df_16`) has violation data for 2014 and 2015 and an indicator for whether the property had any serious violations in 2016. The past years' violations indicators are renamed to be relative to the current year (eg. for 2015, 2014 becomes 1 and 2013 becomes 2). Later I plan to impute missing values, but for now I am simply dropping all records with missing data.
 
 ```{r data-prep, cache=TRUE}
+# If you cloned this repo but haven't run "make_data.R" then you'll only have 
+# A zipped version of this file, so it needs to be unzipped first
+if (!exists("../data/merged.feather")) {
+  unzip("../data/merged.zip", files = "data/merged.feather", exdir = "../data")
+  file.rename("../data/data/merged.feather", "../data/merged.feather")
+  file.remove("../data/data")
+}
+
 df <- feather::read_feather("../data/merged.feather") %>% drop_na()
 
 df_15 <- df %>% 
