@@ -1,35 +1,38 @@
 library(shinydashboard)
 library(leaflet)
 
-header <- dashboardHeader(
-  title = "Serious Housing Code Violations - Brooklyn (2016)",
-  titleWidth = 450
-)
-
-body <- dashboardBody(
-  fluidRow(
-    column(width = 8,
-           box(width = NULL, solidHeader = TRUE,
-               leafletOutput("map", height = 700)
-           )
-    ),
-    column(width = 4,
-           box(width = NULL,
-               selectInput("cd", "Community District:", names(cds))
-           ),
-           box(width = NULL,
-               selectInput("model", "Violations:", names(models))
-           ),
-           box(width = NULL,
-               DT::dataTableOutput("tbl")
-           )
-    )
+function(request){
+    
+  header <- dashboardHeader(
+    title = "Serious Housing Code Violations - Brooklyn (2016)",
+    titleWidth = 450
   )
-)
+  
+  sidebar <- dashboardSidebar(width = 400,
+    tags$style(type = "text/css", "#tbl {background-color: white; color: black; border-radius: 5px; padding: 10px 10px 10px 10px}"),
+    div(style = "align-text: center", bookmarkButton()),
+    sidebarMenu(
+      menuItem("Community District and Model Type",
+        menuSubItem(icon = NULL,
+          selectInput("cd", "Community District:", names(cds))
+        ),
+        menuSubItem(icon = NULL,
+          selectInput("model", "Violations:", names(models))
+        )
+      )
+    ),
+    div(style = "margin: 5% 5% 5% 5%", DT::dataTableOutput("tbl", width = "100%"))
+  )
+  
+  body <- dashboardBody(
+     tags$style(type = "text/css", "#map {height: calc(100vh - 90px) !important;}"),
+     leafletOutput("map")
+  )
 
-dashboardPage(
-  header,
-  dashboardSidebar(disable = TRUE),
-  body,
-  skin = "black"
-)
+  dashboardPage(
+    header,
+    sidebar,
+    body,
+    skin = "black"
+  )
+}
