@@ -138,7 +138,6 @@ clean_rpad <- function(x, pos) {
               year_reno = pmax(year_built, yra1, yra1_rng, yra2, yra2_rng, na.rm = TRUE),
               floors = story,
               buildings = bldgs,
-              new_lot = as.character(newlot),
               building_class = bldgcl,
               zoning = zoning) %>% 
     mutate_at(vars(year_built, year_reno), funs(if_else(. == 0, NA_integer_, .))) 
