@@ -15,8 +15,8 @@ Hash: 14dfb3e8ffe20996118306ff4de1fab2
 
 Package: DBI
 Source: CRAN
-Version: 0.6
-Hash: c1a897fa11e50c1f70258830fc50b1f3
+Version: 0.6-1
+Hash: 4aef5bda70897c1663d5b8bae2f4419a
 
 Package: DT
 Source: CRAN
@@ -96,8 +96,8 @@ Requires: RWekajars, rJava
 
 Package: RWekajars
 Source: CRAN
-Version: 3.9.1-2
-Hash: ea02e53af1ef4eaeb083eb9b89ba1fe1
+Version: 3.9.1-3
+Hash: 6338b2bfad16916a5f64572f5df34b11
 Requires: rJava
 
 Package: Rcpp
@@ -124,8 +124,8 @@ Hash: 806cd94a667a8a17fc253fe2efd788f9
 
 Package: XML
 Source: CRAN
-Version: 3.98-1.5
-Hash: 818adc834fc0a16dd4340a59d63b673a
+Version: 3.98-1.6
+Hash: 7a44444c1f68230e5a1de9ac9eddb709
 
 Package: acepack
 Source: CRAN
@@ -134,8 +134,8 @@ Hash: 5ed3b04bc1fa1a934188fc6022d3ba7c
 
 Package: assertthat
 Source: CRAN
-Version: 0.1
-Hash: 0afb92b59b02593c70ff8046700ba9d3
+Version: 0.2.0
+Hash: e8805df54c65ac96d50235c44a82615c
 
 Package: backports
 Source: CRAN
@@ -716,9 +716,9 @@ Requires: httpuv, jsonlite, mime
 
 Package: sf
 Source: CRAN
-Version: 0.3-4
-Hash: f5e0e42ee13597ab3872d1a5a251f649
-Requires: DBI, Rcpp, units
+Version: 0.4-1
+Hash: aced32dbfd6e5f3a624c59fd63a1f0bf
+Requires: DBI, Rcpp, magrittr, units
 
 Package: shiny
 Source: CRAN
@@ -761,8 +761,8 @@ Hash: ab03f2a40cbc89d6cddf444c93e81a42
 
 Package: stringi
 Source: CRAN
-Version: 1.1.3
-Hash: 458dfc7d682c0f80909521fe482f7c6d
+Version: 1.1.5
+Hash: b6308e49357a0b475f433599e0d8b5eb
 
 Package: stringr
 Source: CRAN
@@ -778,9 +778,9 @@ Requires: Matrix
 
 Package: tibble
 Source: CRAN
-Version: 1.2
-Hash: 0ad215aed62ba7a18bc4c5b89835c934
-Requires: Rcpp, assertthat, lazyeval
+Version: 1.3.0
+Hash: 8de64ed3345488e66b676875ed1ebdce
+Requires: Rcpp, lazyeval
 
 Package: tidyr
 Source: CRAN
@@ -809,9 +809,14 @@ Requires: udunits2
 
 Package: viridis
 Source: CRAN
-Version: 0.3.4
-Hash: c98cc0ee11a389f397c38ddb3762880c
-Requires: ggplot2, gridExtra
+Version: 0.4.0
+Hash: 5bdac1bcf74a10a7a96f82191f498ab7
+Requires: ggplot2, gridExtra, viridisLite
+
+Package: viridisLite
+Source: CRAN
+Version: 0.2.0
+Hash: 10f0c25af3dc84eaae10f5854f47efdb
 
 Package: whisker
 Source: CRAN
