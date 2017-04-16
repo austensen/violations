@@ -9,7 +9,8 @@ pluto <- read_feather("data-raw/dcp_pluto/pluto_16.feather")
 
 # consolidate pluto/rpad variables were overlap, fill out missing tract IDs
 building_info_filtered <- full_join(rpad, pluto, by = "bbl", suffix = c("_rpad", "_pluto")) %>% 
-  mutate(block = str_sub(bbl, 1, 6),
+  mutate(boro = str_sub(bbl, 1, 1),
+         block = str_sub(bbl, 1, 6),
          cd = if_else(is.na(cd_pluto), cd_rpad, cd_pluto),
          building_class = if_else(is.na(building_class_pluto), building_class_rpad, building_class_pluto),
          floors = pmax(floors_pluto, floors_rpad, na.rm = TRUE),
@@ -44,7 +45,7 @@ bbl_tract10_units <- building_info_filtered %>%
   ungroup
 
 building_info <- building_info_filtered %>% 
-  select(-tract10, -block, -tax_class, -zoning, -building_class, -owner_type)
+  select(-county, -tract10, -block, -tax_class, -zoning, -building_class, -owner_type)
 
 write_feather(building_info, "data/building_info.feather")
 write_feather(bbl_tract10_units, "data/bbl_tract10_units.feather")
