@@ -52,13 +52,29 @@ function(input, output, session) {
   
   output$tbl <- DT::renderDataTable(cd_tbl(), selection = "single")
   
+  # The use of `selected_row()` here is a hack to get the pop for a selected bbl form the DT table
+  # to be displayed after restoring a bookmark. Without this hack, on the newly restore page 
+  # `input$tbl_rows_selected` gets set back to NULL and the bookmarked popup is cleared
+  # This is possbily a `DT` bug, see: https://github.com/rstudio/DT/issues/405
+  selected_row <- reactiveVal(0)
+  
   observe({
-    if (is.null(input$tbl_rows_selected)) {
+    new_selected_row <- input$tbl_rows_selected
+    selected_row(new_selected_row)
+  })
+  
+  onRestored(function(state) {
+    new_selected_row <- state$input$tbl_rows_selected
+    selected_row(new_selected_row)
+  })
+
+  observeEvent(selected_row(), {
+    if (is.null(selected_row()) | selected_row() == 0) {
       leafletProxy("map") %>% clearPopups()
       return()
     }
     
-    bbl_selected <- cd_tbl()[["bbl"]][[input$tbl_rows_selected]]
+    bbl_selected <- cd_tbl()[["bbl"]][[selected_row()]]
     
     bbl_df <- filter(cd_df(), bbl == as.character(bbl_selected))
 
