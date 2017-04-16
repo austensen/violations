@@ -75,4 +75,6 @@ function(input, output, session) {
                               "Random Forest Predictions:", round(bbl_df$forest, 2), "<br>"))
   })
   
+  setBookmarkExclude("tbl_rows_all")
 }
+

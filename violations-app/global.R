@@ -1,3 +1,5 @@
+enableBookmarking(store = "url")
+
 cds <- c(
   "Bay Ridge/Dyker Heights" = 310L,
   "Bedford Stuyvesant" = 303L,
