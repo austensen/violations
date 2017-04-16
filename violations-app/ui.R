@@ -4,8 +4,8 @@ library(leaflet)
 function(request){
     
   header <- dashboardHeader(
-    title = "Serious Housing Code Violations - Brooklyn (2016)",
-    titleWidth = 450
+    title = "Housing Code Violations",
+    titleWidth = 357
   )
   
   sidebar <- dashboardSidebar(width = 400,
