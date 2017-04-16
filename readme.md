@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-04-15
+2017-04-16
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -39,7 +39,7 @@ Repository Organization
 </tr>
 <tr class="odd">
 <td><code>./violations-app</code></td>
-<td><a href="https://shiny.rstudio.com/"><code>shiny</code></a> files for <a href="https://maxwell-austensen.shinyapps.io/violations-app/">app to visualize model predictions</a></td>
+<td><a href="https://shiny.rstudio.com/"><code>shiny</code></a> files for <a href="https://maxwell-austensen.shinyapps.io/violations-app/?_inputs_&amp;cd=%22East%20Flatbush%22&amp;map_bounds=%7B%22north%22%3A40.656078261538%2C%22east%22%3A-73.9363574981689%2C%22south%22%3A40.6448451375211%2C%22west%22%3A-73.9578795433044%7D&amp;map_center=%7B%22lng%22%3A-73.9471185207367%2C%22lat%22%3A40.6504619359014%7D&amp;map_shape_mouseout=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.643297732837%2C%22lat%22%3A40.6542713213941%2C%22lng%22%3A-73.9562702178955%7D&amp;map_shape_mouseover=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.525286392328233%2C%22lat%22%3A40.6543364372042%2C%22lng%22%3A-73.9559268951416%7D&amp;map_zoom=16&amp;model=%22Random%20Forest%20Predictions%22&amp;tbl_cell_clicked=%7B%22row%22%3A3%2C%22col%22%3A1%2C%22value%22%3A%223050840061%22%7D&amp;tbl_row_last_clicked=3&amp;tbl_rows_current=%5B1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%5D&amp;tbl_rows_selected=3&amp;tbl_search=%22%22&amp;tbl_state=null">app to visualize model predictions</a></td>
 </tr>
 <tr class="even">
 <td><code>./maps</code></td>
