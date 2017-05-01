@@ -1,5 +1,5 @@
 ---
-title: "Violation Prediction Models"
+title: "Violation Prediction Models - Binary"
 output:
   github_document: default
   html_notebook: default
@@ -10,21 +10,24 @@ library(plyr)
 library(rpart)
 library(randomForest)
 library(caret)
-library(tidyverse)
+library(rattle)
 library(magrittr)
 library(stringr)
 library(ROCR)
+library(MASS)
+library(tidyverse)
 
 knitr::opts_knit$set(autodep=TRUE)
+options(scipen = 10)
 
 set.seed(2017)
 ```
 
 # Prep Data
 
-Create two data sets from training and testing models. The training data set (`df_15`) includes only violation data for 2013 and 2014 and an indicator for whether the property had any serious violations in 2015. The test data set (`df_16`) has violation data for 2014 and 2015 and an indicator for whether the property had any serious violations in 2016. The past years' violations indicators are renamed to be relative to the current year (eg. for 2015, 2014 becomes 1 and 2013 becomes 2). Later I plan to impute missing values, but for now I am simply dropping all records with missing data.
+Create two data sets from training and testing models. The training data set (`df_15`) includes only violation data for 2013 and 2014 and two outcome variables, one indicator for whether the property had any serious violations in 2015, and on with the normalized count of serious violations that is weighted the by type of violation (apartment-specific, or building-wide) and the number of residential units in the building. The test data set (`df_16`) has violation data for 2014 and 2015 and the same two outcomes for 2016. The past years' violations indicators are renamed to be relative to the current year (eg. for 2015, 2014 becomes 1 and 2013 becomes 2). Later I plan to impute missing values, but for now I am simply dropping all records with missing data - There are realtively few now.
 
-```{r data-prep, cache=TRUE}
+```{r data-prep, cache=TRUE, results='hide'}
 # If you cloned this repo but haven't run "make_data.R" then you'll only have 
 # A zipped version of this file, so it needs to be unzipped first
 if (!exists("../data/merged.feather")) {
@@ -33,24 +36,38 @@ if (!exists("../data/merged.feather")) {
   file.remove("../data/data")
 }
 
-df <- feather::read_feather("../data/merged.feather") %>% drop_na()
+df <- feather::read_feather("../data/merged.feather")
 
+tot_obs <- nrow(df)
+
+df <- drop_na(df)
+
+```
+
+There are only `r tot_obs - nrow(df)` records dropped because of missings.
+
+```{r}
 df_15 <- df %>% 
-  mutate(viol_bbl_ser_all_2015 = viol_bbl_bldg_ser_2015 + viol_bbl_apt_ser_2015,
-         outcome = factor(viol_bbl_ser_all_2015 > 0)) %>% 
-  select(-matches("2015|2016$"), -bbl, -block, -tract10) %>% 
-  mutate_if(is.character, as.factor)
+  mutate(outcome_b = factor(viol_bbl_ser_2015 > 0),
+         outcome_r = viol_bbl_ser_2015) %>% 
+  select(-matches("2015|2016$"), -bbl) %>% 
+  set_names(names(.) %>% str_replace_all("2014", "1") %>% str_replace_all("2013", "2"))
 
-names(df_15) <- names(df_15) %>% str_replace_all("2014", "1") %>% str_replace_all("2013", "2")
+df_15_b <- select(df_15, -outcome_r, outcome = outcome_b)
+df_15_r <- select(df_15, -outcome_b, outcome = outcome_r)
+
 
 df_16 <- df %>% 
-  mutate(viol_bbl_ser_all_2016 = viol_bbl_bldg_ser_2016 + viol_bbl_apt_ser_2016,
-         outcome = factor(viol_bbl_ser_all_2016 > 0)) %>% 
-  select(-matches("2013|2016$"), -bbl, -block, -tract10) %>% 
-  mutate_if(is.character, as.factor)
+  mutate(outcome_b = factor(viol_bbl_ser_2016 > 0),
+         outcome_r = viol_bbl_ser_2016) %>% 
+  select(-matches("2013|2016$"), -bbl) %>% 
+  set_names(names(.) %>% str_replace_all("2015", "1") %>% str_replace_all("2014", "2"))
 
-names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_all("2014", "2")
+df_16_b <- select(df_16, -outcome_r, outcome = outcome_b)
+df_16_r <- select(df_16, -outcome_b, outcome = outcome_r)
 ```
+
+
 
 ---
 
@@ -59,7 +76,7 @@ names(df_16) <- names(df_16) %>% str_replace_all("2015", "1") %>% str_replace_al
 First I'll just simply use the presence of serious violations in 2015 to predict for 2016. 
 
 ```{r past-viol, cache=TRUE}
-(past_viol_info <- confusionMatrix(df_15[["outcome"]], df_16[["outcome"]], 
+(past_viol_info <- confusionMatrix(df_15_b[["outcome"]], df_16_b[["outcome"]], 
                             positive = "TRUE", mode = "everything"))
 ```
 
@@ -72,27 +89,52 @@ Using the presence of serious violations in 2015 to predict violations for 2016 
 Next I fit a Logit model using all the attributes for the `df_15` training data set. I then get the predicted values on the `df_16` test data and iterate over threshold values, deciding on 0.5.
 
 ```{r glm-fit, message=TRUE, warning=FALSE, cache=TRUE}
-glm_fit <- glm(outcome ~ ., family = "binomial", df_15)
+glm_fit <- glm("outcome ~ .", family = "binomial", data = df_15_b)
 
-glm_p <- predict(glm_fit, df_16, type = "response")
+glm_p <- predict(glm_fit, df_16_b, type = "response")
 
 print_results <- function(threshold, preditions) {
   ret <- if_else(preditions > threshold, TRUE, FALSE) %>% 
-    as.factor %>% 
-    confusionMatrix(df_16[["outcome"]])
+    as.factor() %>% 
+    confusionMatrix(df_16_b[["outcome"]], positive = "TRUE", mode = "everything")
   
   message(str_c("\nThreshold: ", threshold))
   print(ret)
 }
 
-# Use this to select a theshold - decided on 0.5
-# walk(seq(0.1, 0.9, 0.1), print_results, preditions = glm_p)
+# Use this to select a theshold - decided on 0.7
+# walk(seq(0.4, 0.8, 0.05), print_results, preditions = glm_p)
 
-(glm_info <- confusionMatrix(as.factor(glm_p > .5), df_16[["outcome"]], 
+(glm_info <- confusionMatrix(as.factor(glm_p > 0.7), df_16_b[["outcome"]], 
                              positive = "TRUE", mode = "everything"))
 ```
 
 The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of `r glm_info$overall[["AccuracyNull"]]`. The Logit model achieves a Kappa statistic of `r glm_info$overall[["Kappa"]]`, its precision is `r glm_info$byClass[["Precision"]]`, and recall is `r glm_info$byClass[["Recall"]]`. 
+
+```{r, warning=FALSE}
+step_aic_fit <- MASS::stepAIC(glm_fit)
+```
+
+
+```{r}
+step_aic_p <- predict(step_aic_fit, df_16_b, type = "response")
+
+# Use this to select a theshold - decided on 0.7
+# walk(seq(0.6, .8, 0.025), print_results, preditions = step_aic_p)
+
+(step_aic_info <- confusionMatrix(as.factor(step_aic_p > 0.7), df_16_b[["outcome"]], 
+                             positive = "TRUE", mode = "everything"))
+
+```
+
+```{r}
+glm_correct <- (as.factor(glm_p > 0.7) == df_16_b[["outcome"]])
+step_aic_correct <- (as.factor(step_aic_p > 0.7) == df_16_b[["outcome"]])
+
+(mcnemar_results <- mcnemar.test(table(glm_correct, step_aic_correct)))
+```
+
+The p-value of `r mcnemar_results$p.value` indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
 
 ---
 
@@ -101,15 +143,16 @@ The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, whic
 Next I try a simple decision tree with 10 times 10-fold Cross-validation. 
 
 ```{r tree-fit, cache=TRUE}
-tree_fit_control <- trainControl(method = "repeatedcv", number = 2) # repeats = 10
+tree_fit_control <- trainControl(method = "repeatedcv", number = 5, repeats = 2)
 
-tree_fit <- train(outcome ~ ., data = df_15, 
+tree_fit <- train(form = outcome ~ ., 
+                  data = df_15_b, 
                   method = "rpart", 
                   trControl = tree_fit_control)
 
-tree_p <- predict(tree_fit, df_16)
+tree_p <- predict(tree_fit, df_16_b)
 
-(tree_info <- confusionMatrix(tree_p, df_16[["outcome"]], positive = "TRUE", mode = "everything"))
+(tree_info <- confusionMatrix(tree_p, df_16_b[["outcome"]], positive = "TRUE", mode = "everything"))
 ```
 
 The decision tree's accuracy of `r tree_info$overall[["Accuracy"]]`, is a further improvement over the accuracy Logit model, the previous year's violation prediction, and no information rate. The decision tree model also achieves an improved Kappa statistic of `r tree_info$overall[["Kappa"]]`, and its precision is `r tree_info$byClass[["Precision"]]`, and recall is `r tree_info$byClass[["Recall"]]`. 
@@ -120,6 +163,11 @@ varImp(tree_fit)
 
 As expected, the various indicators of a building's violation record in the current and previous year are the most important attributes for predicting the presence of serious violations in the subsequent year. Additionally, the building's total residential square footage and total lot area, as well as the number of residential units and the total assessed value in the current year are also important.
 
+```{r}
+rattle::fancyRpartPlot(tree_fit$finalModel,
+                       main = "Decision Tree", sub = "")
+```
+
 ---
 
 # Random Forest 
@@ -127,16 +175,18 @@ As expected, the various indicators of a building's violation record in the curr
 Finally, I use a Random Forest model with 10-fold Cross-validation.
 
 ```{r forest-fit, cache=TRUE}
-forest_fit_control <- trainControl(method = "repeatedcv", number = 2)
+forest_fit_control <- trainControl(method = "repeatedcv", number = 5, repeats = 2)
 
-forest_fit <- train(outcome ~ ., data = df_15, 
+forest_fit <- train(outcome ~ ., 
+                    data = df_15_b, 
                     method = "rf", 
-                    tuneGrid=data.frame(mtry=3),
+                    tuneGrid = data.frame(mtry=3),
                     trControl = forest_fit_control)
 
-forest_p <- predict(forest_fit, newdata = df_16)
+forest_p <- predict(forest_fit, newdata = df_16_b)
 
-(forest_info <- confusionMatrix(forest_p, df_16[["outcome"]], positive = "TRUE", mode = "everything"))
+(forest_info <- confusionMatrix(forest_p, df_16_b[["outcome"]], positive = "TRUE", 
+                                mode = "everything"))
 ```
 
 The Random Forest outperforms all the previous models in terms of accuracy with a value of `r forest_info$overall[["Accuracy"]]`. This still is only a slight improvement over all the previous models, and still is only modestly more accurate than the no information rate or previous year's violation prediction of `r past_viol_info$overall[["Accuracy"]]` and `r forest_info$overall[["AccuracyNull"]]`, respectively. The Random Forest also has a Kappa statistic of `r forest_info$overall[["Kappa"]]`, and its precision is `r forest_info$byClass[["Precision"]]`, and recall is `r forest_info$byClass[["Recall"]]`.
@@ -177,19 +227,19 @@ knitr::kable(model_stat_table)
 Next I'll get the predictions of all the models, and store the names and predictions of the models.
 
 ```{r}
-past_viol_pred <- prediction(as.numeric(df_15[["outcome"]]), df_16[["outcome"]])
+past_viol_pred <- prediction(as.numeric(df_15_b[["outcome"]]), df_16_b[["outcome"]])
 
-glm_pred <- prediction(as.numeric(glm_p), df_16[["outcome"]])
+glm_pred <- prediction(as.numeric(glm_p), df_16_b[["outcome"]])
 
 tree_pred <- tree_fit %>% 
-  predict(newdata = df_16, type = "prob") %>% 
+  predict(newdata = df_16_b, type = "prob") %>% 
   .[[2]] %>%
-  prediction(df_16[["outcome"]])
+  prediction(df_16_b[["outcome"]])
 
 forest_pred <- forest_fit %>% 
-  predict(newdata = df_16, type = "prob") %>% 
+  predict(newdata = df_16_b, type = "prob") %>% 
   .[[2]] %>%
-  prediction(df_16[["outcome"]])
+  prediction(df_16_b[["outcome"]])
 
 model_preds <- list(past_viol_pred, glm_pred, tree_pred, forest_pred)
 
@@ -201,8 +251,8 @@ I'll also save predictions from the models into a data frame for additional anal
 
 ```{r}
 predictions <- tibble(bbl = df[["bbl"]],
-                      true_16 = df_16[["outcome"]] %>% as.logical %>% as.numeric, 
-                      past_viol = df_15[["outcome"]] %>% as.logical %>% as.numeric,
+                      true_16 = df_16_b[["outcome"]] %>% as.logical %>% as.numeric, 
+                      past_viol = df_15_b[["outcome"]] %>% as.logical %>% as.numeric,
                       logit = glm_pred@predictions %>% as_vector,
                       tree = tree_pred@predictions %>% as_vector,
                       forest = forest_pred@predictions %>% as_vector)
