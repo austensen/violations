@@ -26,6 +26,9 @@ nta_viol_df <- bbl_tract10_units %>%
 nta_map_data <- left_join(ntas, nta_viol_df, by = c("NTACode" = "nta")) %>% 
   mutate(nta_viol_rt = if_else(str_detect(NTACode, "99"), NA_real_, nta_viol_rt))
 
+
+# saveRDS(nta_map_data, "data/nta_map_data.rds")
+
 # plot(nta_map_data[11])
 
 
@@ -41,7 +44,7 @@ ggplot(nta_map_data, aes(fill = nta_viol_rt)) +
         axis.text = element_blank(),
         plot.caption = element_text(colour = "grey50", face = "italic", size = 8)) +
   labs(title = "Adjusted Number of Serious Housing Code Violations \nper 1,000 Privately Owned Rental Units",
-       subtitle = "by Neighborhood Tabulation Areas, 2016",
+       subtitle = "Neighborhood Tabulation Areas, 2016",
        fill = NULL,
        caption = "Sources: NYC HPD, MapPLUTO, NYC DOF Final Tax Roll File")
 
