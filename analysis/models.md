@@ -9,6 +9,7 @@ library(caret)
 library(rattle)
 library(magrittr)
 library(stringr)
+library(feather)
 library(ROCR)
 library(MASS)
 library(tidyverse)
@@ -33,7 +34,7 @@ if (!exists("../data/merged.feather")) {
   file.remove("../data/data")
 }
 
-df <- feather::read_feather("../data/merged.feather")
+df <- read_feather("../data/merged.feather")
 
 tot_obs <- nrow(df)
 
@@ -555,7 +556,7 @@ model_stat_table <- list(past_viol_info, glm_info, tree_info, forest_info) %>%
   mutate(Statistic = stat_names) %>% 
   select(Statistic, everything())
 
-feather::write_feather(model_stat_table, "../data/model_stat_table.feather")
+write_feather(model_stat_table, "../data/model_stat_table.feather")
 
 knitr::kable(model_stat_table)
 ```
