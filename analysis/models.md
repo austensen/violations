@@ -320,7 +320,7 @@ step_aic_p <- predict(step_aic_fit, df_16_b, type = "response")
 glm_correct <- (as.factor(glm_p > 0.7) == df_16_b[["outcome"]])
 step_aic_correct <- (as.factor(step_aic_p > 0.7) == df_16_b[["outcome"]])
 
-(mcnemar_results <- mcnemar.test(table(glm_correct, step_aic_correct)))
+mcnemar.test(table(glm_correct, step_aic_correct))
 ```
 
     ## 
@@ -329,7 +329,7 @@ step_aic_correct <- (as.factor(step_aic_p > 0.7) == df_16_b[["outcome"]])
     ## data:  table(glm_correct, step_aic_correct)
     ## McNemar's chi-squared = 19.012, df = 1, p-value = 0.00001299
 
-The p-value of 0.000013 indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
+The p-value of indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
 
 ------------------------------------------------------------------------
 
@@ -420,7 +420,19 @@ rattle::fancyRpartPlot(tree_fit$finalModel,
                        main = "Decision Tree", sub = "")
 ```
 
-![](models_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](models_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
+tree_correct <- (as.factor(tree_p) == df_16_b[["outcome"]])
+
+mcnemar.test(table(tree_correct, step_aic_correct))
+```
+
+    ## 
+    ##  McNemar's Chi-squared test with continuity correction
+    ## 
+    ## data:  table(tree_correct, step_aic_correct)
+    ## McNemar's chi-squared = 1.5388, df = 1, p-value = 0.2148
 
 ------------------------------------------------------------------------
 
@@ -507,6 +519,18 @@ varImp(forest_fit)
     ## boro2               4.990
 
 Many of the variables that were important in the single decision tree are also important in the Random Forest model. Others that were important include the number of floors in the building, the Community District in which it is located, and the year it was built.
+
+``` r
+forest_correct <- (as.factor(forest_p) == df_16_b[["outcome"]])
+
+mcnemar.test(table(forest_correct, tree_correct))
+```
+
+    ## 
+    ##  McNemar's Chi-squared test with continuity correction
+    ## 
+    ## data:  table(forest_correct, tree_correct)
+    ## McNemar's chi-squared = 1089.4, df = 1, p-value < 2.2e-16
 
 ------------------------------------------------------------------------
 

@@ -111,7 +111,7 @@ print_results <- function(threshold, preditions) {
 
 The Logit model achieves an accuracy of `r glm_info$overall[["Accuracy"]]`, which is only a slight improvement over the previous year's violation prediction and even better than the no information rate of `r glm_info$overall[["AccuracyNull"]]`. The Logit model achieves a Kappa statistic of `r glm_info$overall[["Kappa"]]`, its precision is `r glm_info$byClass[["Precision"]]`, and recall is `r glm_info$byClass[["Recall"]]`. 
 
-```{r, warning=FALSE}
+```{r step-aic, cache=TRUE, warning=FALSE}
 step_aic_fit <- MASS::stepAIC(glm_fit)
 ```
 
@@ -131,10 +131,10 @@ step_aic_p <- predict(step_aic_fit, df_16_b, type = "response")
 glm_correct <- (as.factor(glm_p > 0.7) == df_16_b[["outcome"]])
 step_aic_correct <- (as.factor(step_aic_p > 0.7) == df_16_b[["outcome"]])
 
-(mcnemar_results <- mcnemar.test(table(glm_correct, step_aic_correct)))
+mcnemar.test(table(glm_correct, step_aic_correct))
 ```
 
-The p-value of `r mcnemar_results$p.value` indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
+The p-value of  indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
 
 ---
 
@@ -168,6 +168,13 @@ rattle::fancyRpartPlot(tree_fit$finalModel,
                        main = "Decision Tree", sub = "")
 ```
 
+
+```{r}
+tree_correct <- (as.factor(tree_p) == df_16_b[["outcome"]])
+
+mcnemar.test(table(tree_correct, step_aic_correct))
+```
+
 ---
 
 # Random Forest 
@@ -196,6 +203,15 @@ varImp(forest_fit)
 ```
 
 Many of the variables that were important in the single decision tree are also important in the Random Forest model. Others that were important include the number of floors in the building, the Community District in which it is located, and the year it was built.
+
+
+
+```{r}
+forest_correct <- (as.factor(forest_p) == df_16_b[["outcome"]])
+
+mcnemar.test(table(forest_correct, tree_correct))
+```
+
 
 ---
 
