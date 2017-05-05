@@ -3,11 +3,6 @@ PackratVersion: 0.4.8.1
 RVersion: 3.3.2
 Repos: CRAN=https://cran.rstudio.com/
 
-Package: AUC
-Source: CRAN
-Version: 0.3.0
-Hash: 55d90c41c785de293a22185e33115eed
-
 Package: BH
 Source: CRAN
 Version: 1.62.0-1
@@ -36,6 +31,11 @@ Hash: 4d3704cb29c9fd363837f2db54b1eb57
 Requires: Formula, acepack, base64enc, cluster, data.table, ggplot2,
     gridExtra, gtable, htmlTable, htmltools, lattice, latticeExtra,
     rpart, survival, viridis
+
+Package: MASS
+Source: CRAN
+Version: 7.3-45
+Hash: 0650d5701aa7e369e77c9e2c8e1dc913
 
 Package: Matrix
 Source: CRAN
@@ -77,6 +77,11 @@ Version: 1.95-4.8
 Hash: 79c7d5a8684e44e0e3426d3093aa7d90
 Requires: bitops
 
+Package: RGtk2
+Source: CRAN
+Version: 2.20.31
+Hash: c73b0fbdee3b6e2d7815b12a1cd6e01f
+
 Package: RJSONIO
 Source: CRAN
 Version: 1.3-0
@@ -87,18 +92,6 @@ Source: CRAN
 Version: 1.0-7
 Hash: 086f78987ebf3c55b01013ee64a5e1e2
 Requires: gplots
-
-Package: RWeka
-Source: CRAN
-Version: 0.4-26
-Hash: f3e657fb471a4aea0ab4bd9a927b63cb
-Requires: RWekajars, rJava
-
-Package: RWekajars
-Source: CRAN
-Version: 3.9.1-3
-Hash: 6338b2bfad16916a5f64572f5df34b11
-Requires: rJava
 
 Package: Rcpp
 Source: CRAN
@@ -172,7 +165,7 @@ Package: car
 Source: CRAN
 Version: 2.1-4
 Hash: d8cc2f66d4ba0c91312f1c1c5773d502
-Requires: mgcv, pbkrtest, quantreg
+Requires: MASS, mgcv, pbkrtest, quantreg
 
 Package: caret
 Source: CRAN
@@ -187,11 +180,6 @@ Version: 1.8.2
 Hash: ca9a37c13c0fead85d580384ce5e25dc
 Requires: backports
 
-Package: clipr
-Source: CRAN
-Version: 0.3.2
-Hash: cab1335d98f5d12219e4b27562cd4cd7
-
 Package: cluster
 Source: CRAN
 Version: 2.0.6
@@ -201,12 +189,6 @@ Package: colorspace
 Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
-
-Package: colourpicker
-Source: CRAN
-Version: 0.3
-Hash: 1f08b29f8b757064029c97360e01d83d
-Requires: ggplot2, htmltools, htmlwidgets, miniUI, shiny, shinyjs
 
 Package: crosstalk
 Source: CRAN
@@ -223,12 +205,6 @@ Package: data.table
 Source: CRAN
 Version: 1.10.0
 Hash: 3be20bb55823803066dce2a38d52cafb
-
-Package: datapasta
-Source: CRAN
-Version: 2.0.0
-Hash: 4c82c02830d0e96578c8d9aec1857b7f
-Requires: clipr, readr, rstudioapi
 
 Package: devtools
 Source: CRAN
@@ -315,12 +291,13 @@ Requires: RgoogleMaps, digest, geosphere, ggplot2, jpeg, mapproj, plyr,
 Package: ggplot2
 Source: github
 Version: 2.2.1.9000
-Hash: 374b15806086d0d35769afe728732ccb
-Requires: digest, gtable, lazyeval, plyr, reshape2, scales, tibble
+Hash: dec60ded69a788180f397eda73b61f32
+Requires: MASS, digest, gtable, lazyeval, plyr, reshape2, scales,
+    tibble
 GithubRepo: ggplot2
 GithubUsername: tidyverse
 GithubRef: master
-GithubSha1: fa8004e6bc2ac0c3fcfd1c6dd907f9c14e4451ce
+GithubSha1: f4398b6d07c85c2d5cd0afb52f50948cba5b8674
 
 Package: ggthemes
 Source: CRAN
@@ -404,8 +381,8 @@ Requires: checkmate, htmlwidgets, knitr, magrittr, stringr
 
 Package: htmltools
 Source: CRAN
-Version: 0.3.5
-Hash: 3411e0671a44177109dc1a9e4a6bd2a4
+Version: 0.3.6
+Hash: fb62c5ebb577da9b27b9a0b660ba7fc4
 Requires: Rcpp, digest
 
 Package: htmlwidgets
@@ -485,7 +462,7 @@ Package: lme4
 Source: CRAN
 Version: 1.1-12
 Hash: b60990b5cff50044a9648e971f84ee2d
-Requires: Matrix, Rcpp, RcppEigen, lattice, minqa, nlme, nloptr
+Requires: MASS, Matrix, Rcpp, RcppEigen, lattice, minqa, nlme, nloptr
 
 Package: lubridate
 Source: CRAN
@@ -586,7 +563,7 @@ Package: pbkrtest
 Source: CRAN
 Version: 0.4-7
 Hash: f195c3a0f527f69c491569c5cbaaf1db
-Requires: Matrix, lme4
+Requires: MASS, Matrix, lme4
 
 Package: plyr
 Source: CRAN
@@ -638,6 +615,12 @@ Version: 2.5-8
 Hash: f50bf34a11c4b10fdf1f1346dfd6f353
 Requires: Rcpp, sp
 
+Package: rattle
+Source: CRAN
+Version: 4.1.0
+Hash: 567ed1a8eafc661815eb41dee89a3494
+Requires: RGtk2, magrittr, stringi
+
 Package: readr
 Source: CRAN
 Version: 1.1.0
@@ -663,8 +646,8 @@ Hash: def074f38d0cff3b597649ee6f976128
 
 Package: rmarkdown
 Source: CRAN
-Version: 1.4
-Hash: 030a6baa0a39c528665ed80d14992c11
+Version: 1.5
+Hash: b37fc27c2604de97b4981eeae7a00879
 Requires: base64enc, caTools, evaluate, htmltools, jsonlite, knitr,
     rprojroot, yaml
 
@@ -672,6 +655,12 @@ Package: rpart
 Source: CRAN
 Version: 4.1-10
 Hash: 1eeecd328c5297c43e9d139944bb0775
+
+Package: rpart.plot
+Source: CRAN
+Version: 2.1.1
+Hash: d4702174b3fa3b9648c1ee1e29d93ee2
+Requires: rpart
 
 Package: rprojroot
 Source: CRAN
@@ -695,6 +684,12 @@ Source: CRAN
 Version: 0.3.2
 Hash: c69f7526520bad66fd2111ebe8b1364b
 Requires: httr, magrittr, selectr, xml2
+
+Package: sandwich
+Source: CRAN
+Version: 2.3-4
+Hash: eb356b4a90fa5887a45917b42587bf6c
+Requires: zoo
 
 Package: scales
 Source: CRAN
@@ -829,10 +824,14 @@ Version: 1.0.2
 Hash: 774eb7be9087cdc24b53b74e5359cfac
 
 Package: xaringan
-Source: CRAN
-Version: 0.2
-Hash: f305672f5f549f0351daaf7431c500aa
+Source: github
+Version: 0.2.1
+Hash: 4424080f14d05ad115f076777bc13d5f
 Requires: htmltools, knitr, rmarkdown, servr
+GithubRepo: xaringan
+GithubUsername: yihui
+GithubRef: master
+GithubSha1: 87b1230ce1ffc180f916ca0a59133cd9a171cf56
 
 Package: xml2
 Source: CRAN
@@ -849,3 +848,9 @@ Package: yaml
 Source: CRAN
 Version: 2.1.14
 Hash: c81230c3a7d9ba20607ad6b4331173d1
+
+Package: zoo
+Source: CRAN
+Version: 1.8-0
+Hash: df9711767f56f086e8a8d1f0fb926ff6
+Requires: lattice
