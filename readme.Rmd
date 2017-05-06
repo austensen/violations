@@ -29,7 +29,7 @@ Directory              | Description
 `./data-documentation` | Documentation files downloaded for data sources
 `./data`               | Final cleaned and joined data sets _(only samples of data are not git-ignored)_
 `./functions`          | R functions used throughout project
-`./presentations`      | Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan)
+`./presentations`      | Slide presentations for class using [`xaringan`](https://github.com/yihui/xaringan), including [final presentaiton PDF](https://github.com/edsp2017/edsp17proj-austensen/blob/master/presentations/Maxwell_final_presentation.pdf)
 `./packrat`            | Files for [`packrat`](https://rstudio.github.io/packrat/) R package management system _(do not edit)_
 
 

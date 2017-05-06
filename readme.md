@@ -1,7 +1,7 @@
 Predicting Housing Code Violations
 ================
 Maxwell Austensen
-2017-04-16
+2017-05-06
 
 -   [Overview](#overview)
 -   [Repository Organization](#repository-organization)
@@ -67,7 +67,7 @@ Repository Organization
 </tr>
 <tr class="even">
 <td><code>./presentations</code></td>
-<td>Slide presentations for class using <a href="https://github.com/yihui/xaringan"><code>xaringan</code></a></td>
+<td>Slide presentations for class using <a href="https://github.com/yihui/xaringan"><code>xaringan</code></a>, including <a href="https://github.com/edsp2017/edsp17proj-austensen/blob/master/presentations/Maxwell_final_presentation.pdf">final presentaiton PDF</a></td>
 </tr>
 <tr class="odd">
 <td><code>./packrat</code></td>
