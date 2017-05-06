@@ -1,0 +1,248 @@
+---
+title: "Prediciting Housing Code Violations"
+subtitle: "EDSP - Final Presentation"
+author: "Maxwell Austensen"
+date: "2017-05-08"
+output:
+  xaringan::moon_reader:
+    css: ["default", "my-theme.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(feather)
+```
+
+class: inverse, center, middle
+
+# Recap
+
+---
+## Topic Motivation
+
+Housing Code Violations cause serious harm to tenants, and are proxy for other harmful conditions
+
+Currently the City and non-profit organizations are complaint-driven
+
+Desire for resources to facilitate more proactive action
+
+## Project Goal
+
+Use available data sources to identify buildings likely to have serious housing code violations
+```{r}
+getwd()
+```
+
+---
+class: inverse, center, middle
+
+# Data
+
+---
+## Data Sources
+
+Currently using publicly available data sources:
+  * History of violations, complaints, and litigation .small[(HPD)]
+  * Physical characteristics of buildings .small[(DOF & DCP)]
+
+## Data Processing
+
+* Download raw data and documentation files
+* Select and clean variables
+* Restrict to privately-owned rental units under HPD jurisdiction
+* Adjust apartment-level violations by number of units
+* Add census tract-level violation aggregates
+* Reshape to wide building-level data set
+
+---
+class: inverse, center, middle
+
+# Descriptives
+
+---
+```{r, include=FALSE}
+# If you cloned this repo but haven't run "make_data.R" then you'll only have 
+# A zipped version of this file, so it needs to be unzipped first
+if (!exists("data/merged.feather")) {
+  unzip("data/merged.zip", files = "data/merged.feather", exdir = "data")
+  file.rename("data/data/merged.feather", "data/merged.feather")
+  file.remove("data/data")
+}
+
+df <- feather::read_feather("data/merged.feather")
+
+sh_viol_16 <- mean(df$viol_bbl_ser_2016 > 0)
+
+viol_16_avg <- df %>% 
+  filter(viol_bbl_ser_2016 > 0) %>% 
+  summarise(mean(viol_bbl_ser_2016)) %>%
+  .[[1]]
+ 
+viol_16_no15 <- df %>% 
+  filter(viol_bbl_ser_2016 > 0) %>% 
+  summarise(mean(viol_bbl_ser_2015 > 0)) %>%
+  .[[1]]
+```
+
+## Housing Maintanice Code Violations
+
+**Focusing on only class C "Immediately Hazardous" (_serious_) violations**
+
+  * Peeling lead paint in dwellings where a child under 7 resides
+  * Inadequate supply of heat and hot water
+  * Broken or defective plumbing fixtures
+  * Defective plaster
+  * Defective faucets
+  * Rodents
+
+<br>
+
+**Only `r round(sh_viol_16*100, 1)`% of buildings in sample had any serious violations in 2016.**
+
+Among these properties:
+
+  * The average adjusted number of serious violations was `r round(viol_16_avg, 1)`. 
+
+  * Only `r round((1 - viol_16_no15)*100, 1)`% also had a serious violation in the previous year.
+
+
+---
+
+background-image: url(img/nta_violation_rate_2016.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# Models
+
+
+---
+## Modeling strategy
+
+**Outcome:** Binary indicator of whether a building had any serious violations
+
+**Training Data:** 2013-14 data to predict violations in 2015
+
+**Test Data:** 2014-15 data to predict violations in 2016
+
+<br>
+ 
+**Classes are highly unbalanced:**
+
+* Each year ~90% of buildings do not have any serious violations
+
+* Improvements over no-information accuracy are constrained
+
+* Model evaluation will emphasize precision and recall
+
+---
+
+**Past Violation** 
+
+Predict violation if building had violation in previous year
+
+**Logistic Regression** 
+
+Selected model using step-wise algorithm with AIC, removing number of buildings and tract-level serious violations from 2 years prior
+
+**Decision Tree** 
+
+Not significantly higher accuracy compared to the logistic model
+
+**Random Forest** 
+
+Significantly higher accuracy than all other models, and allows for specifying a threshold to balance the trade off between precision and recall
+
+<br>
+
+```{r results='asis', echo=FALSE}
+keep_stats <- c("Accuracy", "Precision", "Recall")
+
+read_feather("data/model_stat_table.feather") %>% 
+  filter(Statistic %in% keep_stats) %>% 
+  mutate(Statistic = ordered(Statistic, keep_stats)) %>% 
+  arrange(Statistic) %>% 
+  knitr::kable(format = "html")
+```
+
+---
+
+background-image: url(img/roc-curve-1.png)
+background-size: contain
+
+---
+
+background-image: url(img/pr-curve-1.png)
+background-size: contain
+
+---
+## Variable Importance
+
+The following were associated with increased likelihood of violations:
+
+#### HPD data sources:
+
+* Complaints in previous year (both building- & tract-level)
+* Violations in previous years (both serious & lesser categories, and building- & tract-level)
+* Litigation against owner in previous year
+
+
+#### Building Characteristics:
+
+* Lower assessed value
+* Older/Less recently renovated
+* Larger buildings (# floors, # units, lot area)
+* Smaller units
+* Mixed-use buildings
+* Full below-grade basement
+
+---
+
+background-image: url(img/tree-plot-1.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# [App Prototype](https://maxwell-austensen.shinyapps.io/violations-app/?_inputs_&cd=%22East%20Flatbush%22&map_bounds=%7B%22north%22%3A40.656078261538%2C%22east%22%3A-73.9363574981689%2C%22south%22%3A40.6448451375211%2C%22west%22%3A-73.9578795433044%7D&map_center=%7B%22lng%22%3A-73.9471185207367%2C%22lat%22%3A40.6504619359014%7D&map_shape_mouseout=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.643297732837%2C%22lat%22%3A40.6542713213941%2C%22lng%22%3A-73.9562702178955%7D&map_shape_mouseover=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.525286392328233%2C%22lat%22%3A40.6543364372042%2C%22lng%22%3A-73.9559268951416%7D&map_zoom=16&model=%22Random%20Forest%20Predictions%22&tbl_cell_clicked=%7B%22row%22%3A3%2C%22col%22%3A1%2C%22value%22%3A%223050840061%22%7D&tbl_row_last_clicked=3&tbl_rows_current=%5B1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%5D&tbl_rows_selected=3&tbl_search=%22%22&tbl_state=null)
+
+---
+class: inverse, center, middle
+
+# Next Steps
+
+---
+## Incorporate More Data Sources
+
+* Housing Data Collective
+* Neighborhood-level survey data
+
+## Develop Prediction Models Further
+
+* Tuning model parameters
+* Try different options for training/test splits
+* Try techniques to deal with class imbalance
+* Try regression with adjusted violations count
+
+## Continue App Development
+
+* Test options optimizing performance
+* Polish design elements
+* Add tab with methods and model info
+
+---
+
+class: inverse, center, middle
+
+# Thanks!

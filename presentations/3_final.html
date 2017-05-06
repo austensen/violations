@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prediciting Housing Code Violations</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Maxwell Austensen" />
+    <meta name="date" content="2017-05-08" />
+    <link href="libs/remark-css/example.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Prediciting Housing Code Violations
+## EDSP - Final Presentation
+### Maxwell Austensen
+### 2017-05-08
+
+---
+
+
+
+
+
+
+class: inverse, center, middle
+
+# Recap
+
+---
+## Topic Motivation
+
+Housing Code Violations cause serious harm to tenants, and are proxy for other harmful conditions
+
+Currently the City and non-profit organizations are complaint-driven
+
+Desire for resources to facilitate more proactive action
+
+## Project Goal
+
+Use available data sources to identify buildings likely to have serious housing code violations
+
+```r
+getwd()
+```
+
+```
+## [1] "/Users/Maxwell/repos/edsp17proj-austensen"
+```
+
+---
+class: inverse, center, middle
+
+# Data
+
+---
+## Data Sources
+
+Currently using publicly available data sources:
+  * History of violations, complaints, and litigation .small[(HPD)]
+  * Physical characteristics of buildings .small[(DOF &amp; DCP)]
+
+## Data Processing
+
+* Download raw data and documentation files
+* Select and clean variables
+* Restrict to privately-owned rental units under HPD jurisdiction
+* Adjust apartment-level violations by number of units
+* Add census tract-level violation aggregates
+* Reshape to wide building-level data set
+
+---
+class: inverse, center, middle
+
+# Descriptives
+
+---
+
+
+## Housing Maintanice Code Violations
+
+**Focusing on only class C "Immediately Hazardous" (_serious_) violations**
+
+  * Peeling lead paint in dwellings where a child under 7 resides
+  * Inadequate supply of heat and hot water
+  * Broken or defective plumbing fixtures
+  * Defective plaster
+  * Defective faucets
+  * Rodents
+
+&lt;br&gt;
+
+**Only 9.9% of buildings in sample had any serious violations in 2016.**
+
+Among these properties:
+
+  * The average adjusted number of serious violations was 1.7. 
+
+  * Only 47.2% also had a serious violation in the previous year.
+
+
+---
+
+background-image: url(img/nta_violation_rate_2016.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# Models
+
+
+---
+## Modeling strategy
+
+**Outcome:** Binary indicator of whether a building had any serious violations
+
+**Training Data:** 2013-14 data to predict violations in 2015
+
+**Test Data:** 2014-15 data to predict violations in 2016
+
+&lt;br&gt;
+ 
+**Classes are highly unbalanced:**
+
+* Each year ~90% of buildings do not have any serious violations
+
+* Improvements over no-information accuracy are constrained
+
+* Model evaluation will emphasize precision and recall
+
+---
+
+**Past Violation** 
+
+Predict violation if building had violation in previous year
+
+**Logistic Regression** 
+
+Selected model using step-wise algorithm with AIC, removing number of buildings and tract-level serious violations from 2 years prior
+
+**Decision Tree** 
+
+Not significantly higher accuracy compared to the logistic model
+
+**Random Forest** 
+
+Significantly higher accuracy than all other models, and allows for specifying a threshold to balance the trade off between precision and recall
+
+&lt;br&gt;
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Past Violation &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Logistic Regression &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Decision Tree &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Random Forest &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Accuracy &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.907 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.904 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.905 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.923 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Precision &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.531 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.516 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.519 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.644 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Recall &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.528 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.592 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.505 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+background-image: url(img/roc-curve-1.png)
+background-size: contain
+
+---
+
+background-image: url(img/pr-curve-1.png)
+background-size: contain
+
+---
+## Variable Importance
+
+The following were associated with increased likelihood of violations:
+
+#### HPD data sources:
+
+* Complaints in previous year (both building- &amp; tract-level)
+* Violations in previous years (both serious &amp; lesser categories, and building- &amp; tract-level)
+* Litigation against owner in previous year
+
+
+#### Building Characteristics:
+
+* Lower assessed value
+* Older/Less recently renovated
+* Larger buildings (# floors, # units, lot area)
+* Smaller units
+* Mixed-use buildings
+* Full below-grade basement
+
+---
+
+background-image: url(img/tree-plot-1.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+
+# [App Prototype](https://maxwell-austensen.shinyapps.io/violations-app/?_inputs_&amp;cd=%22East%20Flatbush%22&amp;map_bounds=%7B%22north%22%3A40.656078261538%2C%22east%22%3A-73.9363574981689%2C%22south%22%3A40.6448451375211%2C%22west%22%3A-73.9578795433044%7D&amp;map_center=%7B%22lng%22%3A-73.9471185207367%2C%22lat%22%3A40.6504619359014%7D&amp;map_shape_mouseout=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.643297732837%2C%22lat%22%3A40.6542713213941%2C%22lng%22%3A-73.9562702178955%7D&amp;map_shape_mouseover=%7B%22id%22%3Anull%2C%22.nonce%22%3A0.525286392328233%2C%22lat%22%3A40.6543364372042%2C%22lng%22%3A-73.9559268951416%7D&amp;map_zoom=16&amp;model=%22Random%20Forest%20Predictions%22&amp;tbl_cell_clicked=%7B%22row%22%3A3%2C%22col%22%3A1%2C%22value%22%3A%223050840061%22%7D&amp;tbl_row_last_clicked=3&amp;tbl_rows_current=%5B1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%5D&amp;tbl_rows_selected=3&amp;tbl_search=%22%22&amp;tbl_state=null)
+
+---
+class: inverse, center, middle
+
+# Next Steps
+
+---
+## Incorporate More Data Sources
+
+* Housing Data Collective
+* Neighborhood-level survey data
+
+## Develop Prediction Models Further
+
+* Tuning model parameters
+* Try different options for training/test splits
+* Try techniques to deal with class imbalance
+* Try regression with adjusted violations count
+
+## Continue App Development
+
+* Test options optimizing performance
+* Polish design elements
+* Add tab with methods and model info
+
+---
+
+class: inverse, center, middle
+
+# Thanks!
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
