@@ -137,6 +137,12 @@ mcnemar.test(table(glm_correct, step_aic_correct))
 
 The p-value of  indicates that the marginal improvements `MASS::stepAIC()` made to the logistic model are not statistically significant.
 
+
+```{r}
+summary(step_aic_fit)
+```
+
+
 ---
 
 # Decision Tree
@@ -164,7 +170,7 @@ varImp(tree_fit)
 
 As expected, the various indicators of a building's violation record in the current and previous year are the most important attributes for predicting the presence of serious violations in the subsequent year. Additionally, the building's total residential square footage and total lot area, as well as the number of residential units and the total assessed value in the current year are also important.
 
-```{r}
+```{r tree-plot}
 rattle::fancyRpartPlot(tree_fit$finalModel,
                        main = "Decision Tree", sub = "")
 ```
