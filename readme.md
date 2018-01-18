@@ -14,6 +14,8 @@ Overview
 
 The purpose of this project is to to predict serious housing code violations in multi-family rental building in New York City. All data is taken from publicly available sources, and is organized at the borough-block-lot (BBL) level. The plan is to use all data available in 2015 to predict violations in 2016.
 
+All prediction results can be visualized in this Shiny app: https://maxwell-austensen.shinyapps.io/violations-app/
+
 Repository Organization
 -----------------------
 
